@@ -1,0 +1,46 @@
+<div class="max-w-lg mx-auto mt-10 p-6 bg-white rounded-2xl shadow-sm shadow-tinta/5 border border-tinta/5">
+  <h1 class="font-display text-2xl font-bold text-tinta mb-6">✏️ Editar rifa</h1>
+
+  <form action="/admin/rifas/<%= rifa.id %>/editar" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Título</label>
+      <input type="text" name="titulo" required value="<%= rifa.titulo %>"
+             class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Descripción</label>
+      <textarea name="descripcion" rows="3"
+                class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent"><%= rifa.descripcion %></textarea>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Agregar más fotos del premio</label>
+      <input type="file" name="imagenes" multiple accept="image/*" class="mt-1 w-full text-sm text-tinta/70">
+      <p class="text-xs text-tinta/40 mt-1">Las fotos que subas se añaden a las que ya tiene la rifa.</p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Total de números</label>
+      <input type="number" name="total_numeros" required value="<%= rifa.total_numeros %>"
+             class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Precio por número</label>
+      <input type="number" step="0.01" name="precio_numero" required value="<%= rifa.precio_numero %>"
+             class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Fecha del sorteo</label>
+      <input type="date" name="fecha_sorteo" value="<%= rifa.fecha_sorteo ? rifa.fecha_sorteo.toISOString().split('T')[0] : '' %>"
+             class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+    </div>
+
+    <button type="submit"
+            class="w-full bg-boleto text-white font-display font-semibold py-3 rounded-xl hover:bg-boleto/90 active:scale-[0.98] transition">
+      Guardar cambios
+    </button>
+  </form>
+</div>

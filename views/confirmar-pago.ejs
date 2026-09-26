@@ -1,0 +1,53 @@
+<div class="min-h-screen py-10 px-4">
+  <div class="max-w-lg mx-auto">
+
+    <div class="text-center mb-6">
+      <h1 class="font-display text-2xl font-bold text-tinta">🎉 ¡Números reservados!</h1>
+      <p class="text-sm text-tinta/50 mt-1"><%= rifa.titulo %></p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm shadow-tinta/5 border border-tinta/5 p-6">
+
+      <div class="bg-crema rounded-xl p-4 mb-5">
+        <p class="text-xs text-tinta/50 mb-1">Comprador</p>
+        <p class="font-medium text-tinta"><%= orden.nombre %></p>
+      </div>
+
+      <div class="mb-5">
+        <p class="text-sm text-tinta/50 mb-2">Tus números (<%= numeros.length %>)</p>
+        <div class="flex flex-wrap gap-2">
+          <% numeros.forEach(function(n) { %>
+            <span class="inline-block bg-dorado/15 text-dorado font-semibold text-sm px-3 py-1 rounded-lg">
+              <%= String(n).padStart(4, '0') %>
+            </span>
+          <% }); %>
+        </div>
+      </div>
+
+      <div class="bg-boleto/5 border border-boleto/15 rounded-xl p-4 mb-6">
+        <p class="text-sm text-tinta/70">
+          💰 Total a pagar: <span class="font-bold text-boleto">$<%= Number(orden.valor_total).toLocaleString('es-CO') %></span>
+        </p>
+        <p class="text-xs text-tinta/50 mt-1">
+          Tus números quedan reservados por 30 minutos mientras completas el pago.
+        </p>
+      </div>
+
+      <!-- Botón de pago Wompi -->
+      <form>
+        <script
+          src="https://checkout.wompi.co/widget.js"
+          data-render="button"
+          data-public-key="<%= wompiPublicKey %>"
+          data-currency="COP"
+          data-amount-in-cents="<%= montoEnCentavos %>"
+          data-reference="<%= referencia %>"
+          data-signature:integrity="<%= firmaIntegridad %>"
+          data-redirect-url="<%= redirectUrl %>">
+        </script>
+      </form>
+
+    </div>
+
+  </div>
+</div>

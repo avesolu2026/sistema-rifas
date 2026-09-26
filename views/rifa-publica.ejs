@@ -1,0 +1,104 @@
+<style>
+  .boleto-card { position: relative; }
+  .boleto-card::before, .boleto-card::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    background: #FFF6F4;
+    border-radius: 50%;
+    z-index: 10;
+  }
+  .boleto-card::before { left: -9px; }
+  .boleto-card::after { right: -9px; }
+
+  .carrusel::-webkit-scrollbar { display: none; }
+  .carrusel { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+<div class="min-h-screen pb-28 sm:pb-12">
+
+  <!-- Banner llamativo de venta -->
+  <div class="bg-dorado text-tinta text-center py-3 px-4">
+    <p class="font-display text-xl sm:text-3xl font-extrabold uppercase tracking-wide">
+      🔥  PRISMA BY KEKU'S 🔥
+    </p>
+   
+  </div>
+
+  <!-- Header con título del premio -->
+  <div class="bg-boleto text-white text-center py-8 px-4">
+    <p class="text-xs uppercase tracking-wider text-white/70 font-medium mb-2">🎟️ Rifa activa</p>
+    <h1 class="font-display text-2xl sm:text-4xl font-bold leading-tight"><%= rifa.titulo %></h1>
+    <p class="mt-2 text-white/80 text-sm sm:text-base">🫵 ¡Todo esto puede ser tuyo!</p>
+  </div>
+
+  <!-- Galería en carrusel deslizable -->
+  <div class="carrusel flex gap-3 overflow-x-auto snap-x snap-mandatory px-4 pt-5 pb-1 -mx-0">
+    <% imagenes.forEach(img => { %>
+      <img src="<%= img %>"
+           class="w-[80%] sm:w-64 h-56 sm:h-64 object-cover rounded-2xl shadow-sm snap-center shrink-0"
+           alt="Foto del premio">
+    <% }) %>
+  </div>
+
+  <!-- Barra de progreso -->
+  <div class="max-w-2xl mx-auto mt-6 px-4">
+    <div class="flex justify-between text-sm font-medium text-tinta/60 mb-1.5">
+      <span>Vendido</span>
+      <span class="text-boleto font-semibold"><%= porcentajeVendido %>%</span>
+    </div>
+    <div class="w-full bg-tinta/10 rounded-full h-3 overflow-hidden">
+      <div class="bg-gradient-to-r from-boleto to-dorado h-3 rounded-full transition-all duration-700"
+           style="width: <%= porcentajeVendido %>%"></div>
+    </div>
+  </div>
+
+  <!-- Precio por número -->
+  <div class="max-w-2xl mx-auto mt-8 px-4 text-center">
+    <p class="text-tinta/50 text-sm">Valor por oportunidad</p>
+    <p class="font-display text-3xl sm:text-4xl font-bold text-boleto mt-1">
+      $<%= Number(rifa.precio_numero).toLocaleString('es-CO') %> 🇨🇴
+    </p>
+  </div>
+
+  <!-- Paquetes de oportunidades -->
+  <div id="paquetes" class="max-w-3xl mx-auto mt-6 px-4 scroll-mt-6">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-5 gap-y-4">
+      <% paquetes.forEach(p => { %>
+        <a href="/comprar/<%= rifa.id %>?cantidad=<%= p.cantidad %>"
+           class="boleto-card block bg-white border border-dashed border-boleto/25 hover:border-boleto rounded-xl p-4 text-center shadow-sm transition active:scale-[0.97]">
+          <p class="font-display font-bold text-tinta"><%= p.cantidad %></p>
+          <p class="text-xs text-tinta/50 -mt-0.5 mb-1">oportunidades</p>
+          <p class="text-dorado font-semibold text-sm">$<%= p.precio %></p>
+        </a>
+      <% }) %>
+    </div>
+  </div>
+
+  <!-- Compra personalizada -->
+  <div class="max-w-2xl mx-auto mt-8 px-4 text-center">
+    <a href="/comprar/<%= rifa.id %>"
+       class="inline-block bg-tinta text-white font-display font-semibold text-sm px-6 py-3 rounded-full hover:bg-tinta/90 active:scale-[0.98] transition">
+      Comprar cantidad personalizada
+    </a>
+  </div>
+
+  <!-- Buscar tus números -->
+  <div class="max-w-2xl mx-auto mt-6 px-4 text-center">
+    <a href="/numeros/<%= rifa.id %>" class="text-boleto text-sm font-medium underline underline-offset-2">
+      🔍 Buscar tus números
+    </a>
+  </div>
+
+</div>
+
+<!-- Botón fijo inferior (solo celular) -->
+<div class="fixed bottom-0 left-0 right-0 sm:hidden bg-white border-t border-tinta/10 p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+  <a href="#paquetes"
+     class="block w-full text-center bg-boleto text-white font-display font-semibold py-3 rounded-xl active:scale-[0.98] transition">
+    🎟️ Comprar oportunidades
+  </a>
+</div>

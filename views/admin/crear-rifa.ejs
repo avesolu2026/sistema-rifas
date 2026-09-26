@@ -1,0 +1,98 @@
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-sm shadow-tinta/5 border border-tinta/5">
+  <h1 class="font-display text-2xl font-bold text-tinta mb-6">🎟️ Crear nueva rifa</h1>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3 mb-4">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <form action="/admin/rifas/crear" method="POST" enctype="multipart/form-data" class="space-y-4">
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Título del premio</label>
+      <input type="text" name="titulo" required
+             class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Descripción</label>
+      <textarea name="descripcion" rows="3"
+                class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent"></textarea>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70 mb-1">Fotos del premio (máx. 10)</label>
+
+      <label for="imagenes" class="flex flex-col items-center justify-center w-full border-2 border-dashed border-tinta/15 rounded-xl p-6 cursor-pointer hover:border-boleto hover:bg-crema transition">
+        <svg class="w-8 h-8 text-tinta/40 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <span class="text-sm text-tinta/70 font-medium">Haz clic para subir imágenes</span>
+        <span class="text-xs text-tinta/40 mt-1">o arrastra los archivos aquí</span>
+        <span id="nombre-archivos" class="text-xs text-boleto mt-2 font-medium"></span>
+      </label>
+
+      <input type="file" id="imagenes" name="imagenes" multiple accept="image/*" class="hidden" onchange="mostrarNombresArchivos(this)">
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium text-tinta/70">Total de números</label>
+        <input type="number" name="total_numeros" required placeholder="Ej: 1000"
+               class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-tinta/70">Precio por número</label>
+        <input type="number" step="0.01" name="precio_numero" required placeholder="Ej: 1500"
+               class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Cantidad de dígitos por boleta</label>
+      <select name="digitos_boleta" required
+              class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+        <option value="3">3 dígitos (000 – 999)</option>
+        <option value="4" selected>4 dígitos (0000 – 9999)</option>
+        <option value="5">5 dígitos (00000 – 99999)</option>
+      </select>
+      <p class="text-xs text-tinta/40 mt-1">Este formato queda fijo una vez creada la rifa.</p>
+    </div>
+    <div>
+  <label class="block text-sm font-medium text-tinta/70 mb-2">Paquetes de venta disponibles</label>
+  <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+    <% [1, 5, 10, 20, 30, 40, 50, 100, 200, 300, 500, 1000].forEach(n => { %>
+      <label class="flex items-center gap-2 text-sm text-tinta/70 border border-tinta/15 rounded-lg px-3 py-2 cursor-pointer hover:bg-crema transition">
+        <input type="checkbox" name="paquetes" value="<%= n %>" <%= [5,10,20,50,100].includes(n) ? 'checked' : '' %> class="accent-boleto">
+        <%= n %>
+      </label>
+    <% }) %>
+  </div>
+  <p class="text-xs text-tinta/40 mt-1">Marca los tamaños de paquete que quieres ofrecer en esta rifa.</p>
+</div>
+
+    <div>
+      <label class="block text-sm font-medium text-tinta/70">Fecha del sorteo</label>
+      <input type="date" name="fecha_sorteo"
+             class="mt-1 w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+    </div>
+
+    <button type="submit"
+            class="w-full bg-boleto text-white font-display font-semibold py-3 rounded-xl hover:bg-boleto/90 active:scale-[0.98] transition">
+      Crear rifa
+    </button>
+  </form>
+</div>
+
+<script>
+  function mostrarNombresArchivos(input) {
+    const span = document.getElementById('nombre-archivos');
+    if (input.files.length > 0) {
+      span.textContent = input.files.length === 1
+        ? input.files[0].name
+        : `${input.files.length} archivos seleccionados`;
+    } else {
+      span.textContent = '';
+    }
+  }
+</script>

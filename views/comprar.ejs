@@ -1,0 +1,56 @@
+<div class="min-h-screen py-8 px-4">
+  <div class="max-w-lg mx-auto">
+
+    <a href="/venta-numeros/<%= rifa.id %>" class="text-sm text-tinta/40 hover:text-tinta/60">← Volver a la rifa</a>
+
+    <div class="mt-4 mb-6">
+      <h1 class="font-display text-2xl font-bold text-tinta">Completa tu compra</h1>
+      <p class="text-sm text-tinta/50 mt-1"><%= rifa.titulo %></p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm shadow-tinta/5 border border-tinta/5 p-6">
+      <form action="/comprar/<%= rifa.id %>" method="POST" class="space-y-4">
+
+        <div>
+          <label class="block text-sm font-medium text-tinta/70 mb-1">Cantidad de oportunidades</label>
+          <input type="number" name="cantidad" required min="1" value="<%= cantidad %>"
+                 inputmode="numeric"
+                 class="w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta font-display font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+        </div>
+
+        <div class="h-px bg-tinta/5 my-2"></div>
+
+        <div>
+          <label class="block text-sm font-medium text-tinta/70 mb-1">Nombre completo</label>
+          <input type="text" name="nombre" required placeholder="Como aparece en tu documento"
+                 class="w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-tinta/70 mb-1">Teléfono / WhatsApp</label>
+          <input type="tel" name="telefono" required inputmode="tel" placeholder="300 123 4567"
+                 class="w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-tinta/70 mb-1">Correo electrónico</label>
+          <input type="email" name="correo" required placeholder="tu@correo.com" inputmode="email"
+                 class="w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+          <p class="text-xs text-tinta/40 mt-1">Con este correo podrás buscar tus números después.</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-tinta/70 mb-1">Ciudad</label>
+          <input type="text" name="ciudad"
+                 class="w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+        </div>
+
+        <button type="submit"
+                class="w-full bg-boleto text-white font-display font-semibold py-3.5 rounded-xl hover:bg-boleto/90 active:scale-[0.98] transition mt-2">
+          Continuar 🎟️
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>

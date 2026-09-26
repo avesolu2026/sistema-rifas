@@ -1,0 +1,38 @@
+<div class="min-h-screen flex items-center justify-center px-4">
+  <div class="w-full max-w-sm">
+
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-boleto text-white text-2xl mb-3">
+        🎟️
+      </div>
+      <h1 class="font-display text-2xl font-bold text-tinta">Panel administrativo</h1>
+      <p class="text-sm text-tinta/60 mt-1">Ingresa para gestionar tus rifas</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg shadow-tinta/5 border border-tinta/5 p-6">
+      <% if (error) { %>
+        <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl p-3 mb-4">
+          <%= error %>
+        </div>
+      <% } %>
+
+      <form action="/admin/login" method="POST" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-tinta/70 mb-1">Usuario</label>
+          <input type="text" name="usuario" required
+                 class="w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-tinta/70 mb-1">Contraseña</label>
+          <input type="password" name="password" required
+                 class="w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+        </div>
+        <button type="submit"
+                class="w-full bg-boleto text-white font-display font-semibold py-3 rounded-xl hover:bg-boleto/90 active:scale-[0.98] transition">
+          Entrar
+        </button>
+      </form>
+    </div>
+
+  </div>
+</div>

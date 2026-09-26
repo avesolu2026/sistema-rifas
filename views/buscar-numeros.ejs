@@ -1,0 +1,52 @@
+<div class="min-h-screen py-10 px-4">
+  <div class="max-w-md mx-auto">
+
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-boleto text-white text-2xl mb-3">
+        🔍
+      </div>
+      <h1 class="font-display text-2xl font-bold text-tinta">Buscar tus números</h1>
+      <p class="text-sm text-tinta/50 mt-1"><%= rifa.titulo %></p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm shadow-tinta/5 border border-tinta/5 p-6">
+      <form action="/numeros/<%= rifa.id %>" method="POST" class="flex gap-2">
+        <input type="email" name="correo" required placeholder="tu@correo.com"
+               value="<%= correoBuscado || '' %>"
+               class="flex-1 border border-tinta/15 rounded-xl px-4 py-3 text-tinta focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+        <button type="submit"
+                class="bg-boleto text-white font-display font-semibold px-5 rounded-xl hover:bg-boleto/90 active:scale-[0.98] transition">
+          Buscar
+        </button>
+      </form>
+    </div>
+
+    <% if (numeros !== null) { %>
+      <div class="mt-6">
+        <% if (numeros.length === 0) { %>
+          <div class="bg-white rounded-2xl border border-dashed border-tinta/15 p-8 text-center">
+            <p class="text-tinta/40 text-sm">No encontramos números asociados a <strong><%= correoBuscado %></strong>.</p>
+          </div>
+        <% } else { %>
+          <p class="text-sm text-tinta/50 mb-3"><%= numeros.length %> número<%= numeros.length !== 1 ? 's' : '' %> encontrado<%= numeros.length !== 1 ? 's' : '' %></p>
+          <div class="flex flex-wrap gap-2">
+            <% numeros.forEach(n => { %>
+              <span class="inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg
+                <%= n.estado_orden === 'aprobado' ? 'bg-exito/10 text-exito' : 'bg-dorado/15 text-dorado' %>">
+                <%= String(n.numero).padStart(4, '0') %>
+                <% if (n.estado_orden !== 'aprobado') { %>
+                  <span class="text-[10px] font-normal opacity-70">pendiente</span>
+                <% } %>
+              </span>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+
+    <div class="text-center mt-6">
+     <a href="/venta-numeros/<%= rifa.id %>" class="text-sm text-tinta/40 hover:text-tinta/60">← Volver a la rifa</a>
+    </div>
+
+  </div>
+</div>

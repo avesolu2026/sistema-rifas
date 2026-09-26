@@ -1,0 +1,71 @@
+<div class="min-h-screen">
+
+  <%- include('../partials/admin-header', { tabActiva: 'ordenes' }) %>
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+
+    <div class="mb-6">
+      <h1 class="font-display text-2xl font-bold text-tinta">Órdenes pendientes</h1>
+      <p class="text-sm text-tinta/50 mt-0.5">
+        <%= ordenes.length %> orden<%= ordenes.length !== 1 ? 'es' : '' %> por revisar
+      </p>
+    </div>
+
+    <% if (ordenes.length === 0) { %>
+      <div class="bg-white rounded-2xl border border-dashed border-tinta/15 p-10 text-center">
+        <p class="text-tinta/40">No hay órdenes pendientes por revisar 🎉</p>
+      </div>
+    <% } else { %>
+      <div class="space-y-4">
+        <% ordenes.forEach(function(orden) { %>
+          <div class="bg-white rounded-2xl shadow-sm shadow-tinta/5 border border-tinta/5 overflow-hidden">
+            <div class="flex flex-col sm:flex-row">
+
+              <% if (orden.comprobante_pago) { %>
+                <a href="<%= orden.comprobante_pago %>" target="_blank" class="shrink-0">
+                  <img src="<%= orden.comprobante_pago %>"
+                       class="w-full sm:w-32 h-40 sm:h-full object-cover hover:opacity-90 transition"
+                       alt="Comprobante de pago">
+                </a>
+              <% } else { %>
+                <div class="w-full sm:w-32 h-32 sm:h-auto bg-crema flex items-center justify-center text-2xl shrink-0">
+                  📎
+                </div>
+              <% } %>
+
+              <div class="flex-1 p-4">
+                <p class="font-display font-semibold text-tinta">
+                  <%= orden.nombre %>
+                </p>
+                <p class="text-xs text-tinta/50 mt-0.5"><%= orden.rifa_titulo %></p>
+                <p class="text-sm text-tinta/60 mt-2">
+                  📞 <%= orden.telefono %> &nbsp;·&nbsp; ✉️ <%= orden.correo %>
+                </p>
+                <p class="text-sm font-medium text-tinta mt-1">
+                  <%= orden.cantidad_numeros %> números · $<%= Number(orden.valor_total).toLocaleString('es-CO') %>
+                </p>
+
+                <div class="flex gap-2 mt-3">
+                  <form action="/admin/ordenes/<%= orden.id %>/aprobar" method="POST">
+                    <button type="submit"
+                            class="bg-exito text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-exito/90 active:scale-[0.98] transition">
+                      Aprobar
+                    </button>
+                  </form>
+                  <form action="/admin/ordenes/<%= orden.id %>/rechazar" method="POST"
+                        onsubmit="return confirm('¿Rechazar esta orden? Los números vuelven a estar disponibles.');">
+                    <button type="submit"
+                            class="bg-white border border-red-200 text-red-500 text-sm font-semibold px-4 py-2 rounded-xl hover:bg-red-50 transition">
+                      Rechazar
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+
+  </div>
+</div>

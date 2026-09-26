@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --color-boleto: #5B2A86;
+  --color-dorado: #F0A93A;
+  --color-tinta: #1C1633;
+  --color-crema: #FFF6F4;
+  --color-exito: #16A34A;
+
+  --font-display: 'Sora', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
