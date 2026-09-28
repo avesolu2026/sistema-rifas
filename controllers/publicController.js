@@ -15,8 +15,9 @@ const publicController = {
     const porcentajeVendido = ((vendidos / rifa.total_numeros) * 100).toFixed(2);
 
     // Usa los paquetes definidos para esta rifa; si es una rifa vieja sin ese campo, usa una lista por defecto
-    const cantidades = rifa.paquetes && rifa.paquetes.length > 0
-      ? rifa.paquetes
+    const paquetesGuardados = rifa.paquetes ? JSON.parse(rifa.paquetes) : [];
+    const cantidades = paquetesGuardados.length > 0
+      ? paquetesGuardados
       : [10, 20, 30, 40, 50, 100, 200, 300, 500];
 
     const paquetes = cantidades
