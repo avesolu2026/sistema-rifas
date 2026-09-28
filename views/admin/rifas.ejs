@@ -1,4 +1,4 @@
-<div class="min-h-screen">
+<div class="min-h-screen bg-black">
 
   <%- include('../partials/admin-header', { tabActiva: 'rifas' }) %>
 
@@ -6,83 +6,83 @@
 
     <!-- Resumen -->
     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
-      <div class="bg-white rounded-2xl border border-tinta/5 p-4">
-        <p class="text-xs text-tinta/50">Rifas activas</p>
-        <p class="font-display text-2xl font-bold text-tinta mt-1"><%= stats.activas %></p>
+      <div class="bg-black rounded-2xl border border-dorado/20 p-4">
+        <p class="text-xs text-white/50">Rifas activas</p>
+        <p class="font-display text-2xl font-bold text-white mt-1"><%= stats.activas %></p>
       </div>
-      <div class="bg-white rounded-2xl border border-tinta/5 p-4">
-        <p class="text-xs text-tinta/50">Números ocupados</p>
-        <p class="font-display text-2xl font-bold text-tinta mt-1"><%= stats.vendidos %></p>
+      <div class="bg-black rounded-2xl border border-dorado/20 p-4">
+        <p class="text-xs text-white/50">Números ocupados</p>
+        <p class="font-display text-2xl font-bold text-white mt-1"><%= stats.vendidos %></p>
       </div>
-      <div class="bg-white rounded-2xl border border-tinta/5 p-4 col-span-2 sm:col-span-1">
-        <p class="text-xs text-tinta/50">Recaudado</p>
-        <p class="font-display text-2xl font-bold text-exito mt-1">$<%= Number(stats.recaudado).toLocaleString('es-CO') %></p>
+      <div class="bg-black rounded-2xl border border-dorado/20 p-4 col-span-2 sm:col-span-1">
+        <p class="text-xs text-white/50">Recaudado</p>
+        <p class="font-display text-2xl font-bold text-dorado mt-1">$<%= Number(stats.recaudado).toLocaleString('es-CO') %></p>
       </div>
     </div>
 
     <div class="flex items-center justify-between mb-6">
       <div>
-        <h1 class="font-display text-2xl font-bold text-tinta">Mis rifas</h1>
-        <p class="text-sm text-tinta/50 mt-0.5"><%= rifas.length %> rifa<%= rifas.length !== 1 ? 's' : '' %> creada<%= rifas.length !== 1 ? 's' : '' %></p>
+        <h1 class="font-display text-2xl font-bold text-white">Mis rifas</h1>
+        <p class="text-sm text-white/50 mt-0.5"><%= rifas.length %> rifa<%= rifas.length !== 1 ? 's' : '' %> creada<%= rifas.length !== 1 ? 's' : '' %></p>
       </div>
       <a href="/admin/rifas/crear"
-         class="bg-boleto text-white font-display font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-boleto/90 active:scale-[0.98] transition whitespace-nowrap">
+         class="bg-dorado text-tinta font-display font-semibold text-sm px-4 py-2.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition whitespace-nowrap">
         + Nueva rifa
       </a>
     </div>
 
     <% if (rifas.length === 0) { %>
-      <div class="bg-white rounded-2xl border border-dashed border-tinta/15 p-10 text-center">
-        <p class="text-tinta/40">Todavía no has creado ninguna rifa.</p>
+      <div class="bg-black rounded-2xl border border-dashed border-dorado/20 p-10 text-center">
+        <p class="text-white/40">Todavía no has creado ninguna rifa.</p>
       </div>
     <% } %>
 
     <div class="grid gap-4">
       <% rifas.forEach(rifa => { %>
         <% const imgs = JSON.parse(rifa.premio_imagenes || '[]'); %>
-        <div class="bg-white rounded-2xl shadow-sm shadow-tinta/5 border border-tinta/5 overflow-hidden">
+        <div class="bg-black rounded-2xl border border-dorado/20 overflow-hidden">
           <div class="flex flex-col sm:flex-row">
 
             <% if (imgs.length > 0) { %>
               <img src="<%= imgs[0] %>" class="w-full sm:w-40 h-40 sm:h-auto object-cover" alt="<%= rifa.titulo %>">
             <% } else { %>
-              <div class="w-full sm:w-40 h-40 sm:h-auto bg-crema flex items-center justify-center text-3xl">🎁</div>
+              <div class="w-full sm:w-40 h-40 sm:h-auto bg-white/5 flex items-center justify-center text-3xl">🎁</div>
             <% } %>
 
             <div class="flex-1 p-4 flex flex-col justify-between">
               <div class="flex items-start justify-between gap-3">
-                <h2 class="font-display font-semibold text-tinta text-lg leading-snug"><%= rifa.titulo %></h2>
+                <h2 class="font-display font-semibold text-white text-lg leading-snug"><%= rifa.titulo %></h2>
                 <span class="shrink-0 text-xs font-medium px-2.5 py-1 rounded-full
-                  <%= rifa.estado === 'activa' ? 'bg-exito/10 text-exito' : 'bg-tinta/5 text-tinta/50' %>">
+                  <%= rifa.estado === 'activa' ? 'bg-dorado/10 text-dorado' : 'bg-white/5 text-white/50' %>">
                   <%= rifa.estado %>
                 </span>
               </div>
 
-              <p class="text-sm text-tinta/50 mt-1">
+              <p class="text-sm text-white/50 mt-1">
                 <%= rifa.total_numeros %> números — $<%= Number(rifa.precio_numero).toLocaleString('es-CO') %> c/u
               </p>
 
               <div class="flex flex-wrap gap-2 mt-3">
                 <a href="/admin/rifas/<%= rifa.id %>/estadisticas"
-                   class="text-xs font-medium px-3 py-1.5 rounded-lg border border-tinta/10 text-tinta/70 hover:bg-crema transition">
+                   class="text-xs font-medium px-3 py-1.5 rounded-lg border border-dorado/20 text-white/70 hover:bg-white/5 transition">
                   📊 Estadísticas
                 </a>
                 <a href="/admin/rifas/<%= rifa.id %>/numeros"
-                   class="text-xs font-medium px-3 py-1.5 rounded-lg border border-tinta/10 text-tinta/70 hover:bg-crema transition">
+                   class="text-xs font-medium px-3 py-1.5 rounded-lg border border-dorado/20 text-white/70 hover:bg-white/5 transition">
                   🔢 Ver números
                 </a>
                 <a href="/venta-numeros/<%= rifa.id %>" target="_blank"
-                   class="text-xs font-medium px-3 py-1.5 rounded-lg border border-tinta/10 text-tinta/70 hover:bg-crema transition">
+                   class="text-xs font-medium px-3 py-1.5 rounded-lg border border-dorado/20 text-white/70 hover:bg-white/5 transition">
                   Ver página
                 </a>
                 <a href="/admin/rifas/<%= rifa.id %>/editar"
-                   class="text-xs font-medium px-3 py-1.5 rounded-lg border border-tinta/10 text-tinta/70 hover:bg-crema transition">
+                   class="text-xs font-medium px-3 py-1.5 rounded-lg border border-dorado/20 text-white/70 hover:bg-white/5 transition">
                   Editar
                 </a>
                 <form action="/admin/rifas/<%= rifa.id %>/eliminar" method="POST"
                       onsubmit="return confirm('¿Eliminar esta rifa? Esta acción no se puede deshacer.');">
                   <button type="submit"
-                          class="text-xs font-medium px-3 py-1.5 rounded-lg border border-red-100 text-red-500 hover:bg-red-50 transition">
+                          class="text-xs font-medium px-3 py-1.5 rounded-lg border border-red-900 text-red-400 hover:bg-red-950 transition">
                     Eliminar
                   </button>
                 </form>

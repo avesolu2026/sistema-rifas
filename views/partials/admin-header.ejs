@@ -1,24 +1,24 @@
-<header class="bg-tinta text-white">
+<header class="bg-black text-white border-b border-dorado/20">
   <div class="max-w-5xl mx-auto px-4 pt-4 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <span class="text-xl">🎟️</span>
-      <span class="font-display font-bold">Panel administrativo</span>
+      <span class="font-display font-bold text-dorado">Panel administrativo</span>
     </div>
     <div class="flex items-center gap-4">
-      <a href="/admin/usuarios/crear" class="text-sm text-white/70 hover:text-white transition">+ Usuario</a>
+      <a href="/admin/usuarios/crear" class="text-sm text-white/70 hover:text-dorado transition">+ Usuario</a>
       <form action="/admin/logout" method="POST">
-        <button type="submit" class="text-sm text-white/70 hover:text-white transition">Cerrar sesión</button>
+        <button type="submit" class="text-sm text-white/70 hover:text-dorado transition">Cerrar sesión</button>
       </form>
     </div>
   </div>
 
   <nav class="max-w-5xl mx-auto px-4 mt-4 flex gap-1 text-sm font-medium">
     <a href="/admin/rifas"
-       class="px-4 py-2.5 rounded-t-lg <%= tabActiva === 'rifas' ? 'bg-crema text-tinta' : 'text-white/60 hover:text-white' %>">
+       class="px-4 py-2.5 rounded-t-lg <%= tabActiva === 'rifas' ? 'bg-black text-dorado border-t border-x border-dorado/30' : 'text-white/60 hover:text-white' %>">
       Rifas
     </a>
     <a href="/admin/ordenes"
-       class="px-4 py-2.5 rounded-t-lg flex items-center gap-2 <%= tabActiva === 'ordenes' ? 'bg-crema text-tinta' : 'text-white/60 hover:text-white' %>">
+       class="px-4 py-2.5 rounded-t-lg flex items-center gap-2 <%= tabActiva === 'ordenes' ? 'bg-black text-dorado border-t border-x border-dorado/30' : 'text-white/60 hover:text-white' %>">
       Órdenes
       <% if (typeof stats !== 'undefined' && stats.pendientes > 0) { %>
         <span class="bg-dorado text-tinta text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
