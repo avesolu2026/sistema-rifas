@@ -11,7 +11,7 @@ const rifaController = {
 
   async crearRifa(req, res) {
     try {
-      const { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, digitos_boleta } = req.body;
+      const { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, loteria } = req.body;
       const totalNum = parseInt(total_numeros);
       const digitos = parseInt(digitos_boleta);
 
@@ -23,7 +23,6 @@ const rifaController = {
         });
       }
 
-      // Normaliza las casillas marcadas (pueden venir como string único o como arreglo)
       let paquetesSeleccionados = req.body.paquetes || [];
       if (!Array.isArray(paquetesSeleccionados)) {
         paquetesSeleccionados = [paquetesSeleccionados];
@@ -40,7 +39,8 @@ const rifaController = {
         precio_numero: parseFloat(precio_numero),
         fecha_sorteo,
         digitos_boleta: digitos,
-        paquetes: paquetesNums
+        paquetes: paquetesNums,
+        loteria
       });
 
       await Numero.generarNumeros(rifaId, totalNum, digitos);
@@ -83,16 +83,15 @@ const rifaController = {
 
   async actualizarRifa(req, res) {
     try {
-      const { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo } = req.body;
+      const { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria } = req.body;
       const nuevoTotal = parseInt(total_numeros);
 
       const rifaActual = await Rifa.obtenerPorId(req.params.id);
       if (!rifaActual) return res.status(404).send('Rifa no encontrada');
 
       const totalActual = rifaActual.total_numeros;
-      const digitos = rifaActual.digitos_boleta || 4; // por si alguna rifa vieja no tiene el campo
+      const digitos = rifaActual.digitos_boleta || 4;
 
-      // Validar que el nuevo total quepa en los dígitos fijos de esta rifa
       const maxPosible = Math.pow(10, digitos);
       if (nuevoTotal > maxPosible) {
         return res.render('admin/editar-rifa', {
@@ -107,7 +106,8 @@ const rifaController = {
         descripcion,
         total_numeros: nuevoTotal,
         precio_numero: parseFloat(precio_numero),
-        fecha_sorteo
+        fecha_sorteo,
+        loteria
       });
 
       if (nuevoTotal > totalActual) {

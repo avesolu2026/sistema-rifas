@@ -1,11 +1,11 @@
 const db = require('../config/db');
 
 const Rifa = {
-  async crear({ titulo, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes }) {
+  async crear({ titulo, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria }) {
     const [result] = await db.query(
-      `INSERT INTO rifas (titulo, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [titulo, descripcion, JSON.stringify(premio_imagenes), total_numeros, precio_numero, fecha_sorteo, digitos_boleta, JSON.stringify(paquetes)]
+      `INSERT INTO rifas (titulo, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [titulo, descripcion, JSON.stringify(premio_imagenes), total_numeros, precio_numero, fecha_sorteo, digitos_boleta, JSON.stringify(paquetes), loteria]
     );
     return result.insertId;
   },
@@ -20,11 +20,11 @@ const Rifa = {
     return rows[0];
   },
 
-  async actualizar(id, { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo }) {
+  async actualizar(id, { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria }) {
     await db.query(
-      `UPDATE rifas SET titulo = ?, descripcion = ?, total_numeros = ?, precio_numero = ?, fecha_sorteo = ?
+      `UPDATE rifas SET titulo = ?, descripcion = ?, total_numeros = ?, precio_numero = ?, fecha_sorteo = ?, loteria = ?
        WHERE id = ?`,
-      [titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, id]
+      [titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, id]
     );
   },
 

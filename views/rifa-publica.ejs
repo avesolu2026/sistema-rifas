@@ -39,7 +39,7 @@
         </div>
         <div>
           <p class="text-white/40 text-xs uppercase">Con la</p>
-          <p class="font-display font-bold text-white">Lotería</p>
+          <p class="font-display font-bold text-white"><%= rifa.loteria || 'Por definir' %></p>
         </div>
         <div class="col-span-2 sm:col-span-1">
           <p class="text-white/40 text-xs uppercase">Importante</p>
@@ -53,12 +53,25 @@
       </a>
     </div>
 
-    <div class="carrusel flex gap-3 overflow-x-auto snap-x snap-mandatory">
-      <% imagenes.forEach(img => { %>
-        <img src="<%= img %>"
-             class="w-full md:w-full h-72 sm:h-96 object-cover rounded-2xl border border-dorado/30 snap-center shrink-0"
-             alt="Foto del premio" loading="eager">
-      <% }) %>
+    <div class="relative max-w-lg mx-auto md:max-w-none">
+      <div id="carrusel" class="carrusel flex gap-3 overflow-x-auto snap-x snap-mandatory">
+        <% imagenes.forEach(img => { %>
+          <img src="<%= img %>"
+               class="w-full h-72 sm:h-96 object-cover rounded-2xl border border-dorado/30 snap-center shrink-0"
+               alt="Foto del premio" loading="eager">
+        <% }) %>
+      </div>
+
+      <% if (imagenes.length > 1) { %>
+        <button onclick="moverCarrusel(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 text-dorado w-9 h-9 rounded-full flex items-center justify-center hover:bg-black/80 transition">‹</button>
+        <button onclick="moverCarrusel(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 text-dorado w-9 h-9 rounded-full flex items-center justify-center hover:bg-black/80 transition">›</button>
+
+        <div class="flex justify-center gap-1.5 mt-3">
+          <% imagenes.forEach((img, i) => { %>
+            <span class="w-2 h-2 rounded-full bg-dorado/30"></span>
+          <% }) %>
+        </div>
+      <% } %>
     </div>
   </section>
 
@@ -159,3 +172,10 @@
     🎟️ Comprar oportunidades
   </a>
 </div>
+
+<script>
+  function moverCarrusel(direccion) {
+    const cont = document.getElementById('carrusel');
+    cont.scrollBy({ left: direccion * cont.clientWidth, behavior: 'smooth' });
+  }
+</script>
