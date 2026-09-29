@@ -109,10 +109,11 @@ const compraController = {
     });
   },
 
-  // Wompi llama aquí automáticamente cuando el pago cambia de estado
-  async webhookWompi(req, res) {
+    async webhookWompi(req, res) {
     try {
       const payload = req.body;
+
+      console.log('Webhook Wompi recibido:', payload.event, payload.data?.transaction?.reference, payload.data?.transaction?.status);
 
       // Verificar que el webhook sea legítimo
       const esValido = verificarFirmaWebhook(payload, process.env.WOMPI_EVENTS_SECRET);
