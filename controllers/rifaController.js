@@ -213,24 +213,37 @@ const rifaController = {
     const rifa = await Rifa.obtenerPorId(req.params.id);
     if (!rifa) return res.status(404).send('Rifa no encontrada');
 
-    const numeros = await Numero.obtenerTodosPorRifa(req.params.id);
+    let numeros = await Numero.obtenerTodosPorRifa(req.params.id);
+
+    const { estado, busqueda } = req.query;
+
+    if (estado && estado !== 'todos') {
+      numeros = numeros.filter(n => n.estado === estado);
+    }
+
+    if (busqueda) {
+      numeros = numeros.filter(n => String(n.numero).includes(busqueda.trim()));
+    }
 
     res.render('admin/numeros-rifa', {
       title: 'Números — ' + rifa.titulo,
       rifa,
-      numeros
+      numeros,
+      filtroEstado: estado || 'todos',
+      filtroBusqueda: busqueda || ''
     });
   },
 
   async marcarNumeros(req, res) {
     try {
-      const { rifa_id, numeros, estado } = req.body;
-      let lista = numeros || [];
+      const rifaId = req.params.id;
+      const { estado } = req.body;
+      let lista = req.body.numeros || [];
       if (!Array.isArray(lista)) lista = [lista];
 
-      await Numero.marcarManual(rifa_id, lista, estado);
+      await Numero.marcarManual(rifaId, lista, estado);
 
-      res.redirect('/admin/rifas/' + rifa_id + '/numeros');
+      res.redirect('/admin/rifas/' + rifaId + '/numeros');
     } catch (error) {
       console.error(error);
       res.status(500).send('Error al marcar números: ' + error.message);
