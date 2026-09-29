@@ -2,6 +2,7 @@ const Rifa = require('../models/Rifa');
 const Numero = require('../models/Numero');
 const db = require('../config/db');
 const Orden = require('../models/Orden');
+const Comprador = require('../models/Comprador');
 const ExcelJS = require('exceljs');
 
 const rifaController = {
@@ -229,7 +230,29 @@ const rifaController = {
       let lista = req.body.numeros || [];
       if (!Array.isArray(lista)) lista = [lista];
 
-      await Numero.marcarManual(rifaId, lista, estado, nombre_reserva);
+      if (estado === 'reservado') {
+        const rifa = await Rifa.obtenerPorId(rifaId);
+
+        const compradorId = await Comprador.crear({
+          nombre: nombre_reserva,
+          telefono: '',
+          correo: `reserva-${Date.now()}@interno.local`,
+          ciudad: ''
+        });
+
+        const valorTotal = lista.length * rifa.precio_numero;
+
+        const ordenId = await Orden.crear({
+          rifa_id: rifaId,
+          comprador_id: compradorId,
+          cantidad_numeros: lista.length,
+          valor_total: valorTotal
+        });
+
+        await Numero.asignarManual(rifaId, lista, ordenId, nombre_reserva);
+      } else {
+        await Numero.liberarManual(rifaId, lista);
+      }
 
       res.redirect('/admin/rifas/' + rifaId + '/numeros');
     } catch (error) {

@@ -97,14 +97,17 @@ const Numero = {
     return rows;
   },
 
-  async marcarManual(rifa_id, numeros, estado, nombreReserva) {
-    if (!numeros || numeros.length === 0) return;
-
-    const nombreAGuardar = estado === 'reservado' ? (nombreReserva || null) : null;
-
+  async asignarManual(rifa_id, numeros, orden_id, nombre) {
     await db.query(
-      `UPDATE numeros SET estado = ?, reservado_para = ? WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
-      [estado, nombreAGuardar, rifa_id, numeros]
+      `UPDATE numeros SET estado = 'reservado', orden_id = ?, reservado_para = ? WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
+      [orden_id, nombre || null, rifa_id, numeros]
+    );
+  },
+
+  async liberarManual(rifa_id, numeros) {
+    await db.query(
+      `UPDATE numeros SET estado = 'disponible', orden_id = NULL, reservado_para = NULL WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
+      [rifa_id, numeros]
     );
   }
 };
