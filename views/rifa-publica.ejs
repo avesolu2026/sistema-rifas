@@ -12,30 +12,44 @@
     </a>
     <div class="hidden md:flex items-center gap-6 text-sm font-semibold uppercase tracking-wide text-white/80">
       <a href="#inicio" class="hover:text-dorado transition">Inicio</a>
-      <a href="#paquetes" class="hover:text-dorado transition">Comprar números</a>
+      <a href="#paquetes" class="hover:text-dorado transition">Comprar stickers</a>
       <a href="#como-funciona" class="hover:text-dorado transition">Cómo funciona</a>
       <a href="#condiciones" class="hover:text-dorado transition">Condiciones</a>
       <a href="#contacto" class="hover:text-dorado transition">Contacto</a>
     </div>
     <a href="/numeros/<%= rifa.id %>"
        class="bg-dorado text-tinta font-display font-bold text-sm px-5 py-2.5 rounded-full hover:opacity-90 transition">
-      Mis números
+      Mis stickers
     </a>
   </nav>
 
-  <!-- Hero: texto + foto -->
+  <!-- Hero -->
   <section id="inicio" class="grid md:grid-cols-2 gap-8 items-center px-4 sm:px-8 py-10 max-w-6xl mx-auto">
     <div>
-      <p class="text-dorado text-xs uppercase tracking-widest font-semibold mb-2">Gran rifa</p>
-      <h1 class="font-display text-4xl sm:text-5xl font-extrabold leading-tight mb-4"><%= rifa.titulo %></h1>
+      <%
+        const partes = rifa.titulo.split(' ');
+        const mitad = Math.ceil(partes.length / 2);
+        const lineaBlanca = partes.slice(0, mitad).join(' ');
+        const lineaAmarilla = partes.slice(mitad).join(' ');
+      %>
+      <h1 class="font-display leading-tight mb-4">
+        <span class="block text-white text-4xl sm:text-5xl font-extrabold"><%= lineaBlanca %></span>
+        <% if (lineaAmarilla) { %>
+          <span class="block text-dorado text-4xl sm:text-5xl font-extrabold"><%= lineaAmarilla %></span>
+        <% } %>
+      </h1>
       <p class="text-white/70 text-base mb-6"><%= rifa.descripcion %></p>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 border border-dorado/30 rounded-xl p-4 mb-6">
         <div>
           <p class="text-white/40 text-xs uppercase">Sorteo</p>
-          <p class="font-display font-bold text-white">
-            <%= new Date(rifa.fecha_sorteo).toLocaleDateString('es-CO', { day: 'numeric', month: 'long' }) %>
-          </p>
+          <%
+            const fechaSorteo = new Date(rifa.fecha_sorteo);
+            const diaSorteo = fechaSorteo.toLocaleDateString('es-CO', { day: 'numeric' });
+            const mesSorteo = fechaSorteo.toLocaleDateString('es-CO', { month: 'long' }).toUpperCase();
+          %>
+          <p class="font-display font-extrabold text-white text-2xl leading-none"><%= diaSorteo %></p>
+          <p class="font-display font-bold text-dorado text-sm tracking-wide"><%= mesSorteo %></p>
         </div>
         <div>
           <p class="text-white/40 text-xs uppercase">Con la</p>
@@ -49,7 +63,7 @@
 
       <a href="#paquetes"
          class="inline-block bg-dorado text-tinta font-display font-bold px-6 py-3 rounded-full hover:opacity-90 transition">
-        Elegir mis números →
+        Selecciona tus stickers →
       </a>
     </div>
 
@@ -65,7 +79,6 @@
       <% if (imagenes.length > 1) { %>
         <button onclick="moverCarrusel(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 text-dorado w-9 h-9 rounded-full flex items-center justify-center hover:bg-black/80 transition">‹</button>
         <button onclick="moverCarrusel(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 text-dorado w-9 h-9 rounded-full flex items-center justify-center hover:bg-black/80 transition">›</button>
-
         <div class="flex justify-center gap-1.5 mt-3">
           <% imagenes.forEach((img, i) => { %>
             <span class="w-2 h-2 rounded-full bg-dorado/30"></span>
@@ -85,8 +98,7 @@
       <div class="bg-dorado h-3 rounded-full transition-all duration-700"
            style="width: <%= porcentajeVendido %>%"></div>
     </div>
-
-    <p class="text-center text-white/50 text-sm mt-8">Valor por oportunidad</p>
+    <p class="text-center text-white/50 text-sm mt-8">Valor por sticker</p>
     <p class="text-center font-display text-3xl sm:text-4xl font-bold text-dorado mt-1">
       $<%= Number(rifa.precio_numero).toLocaleString('es-CO') %> 🇨🇴
     </p>
@@ -99,7 +111,7 @@
         <a href="/comprar/<%= rifa.id %>?cantidad=<%= p.cantidad %>"
            class="bg-black/20 border border-dorado/30 hover:border-dorado rounded-xl p-4 text-center transition active:scale-[0.97]">
           <p class="font-display font-bold text-white"><%= p.cantidad %></p>
-          <p class="text-xs text-white/50 -mt-0.5 mb-1">oportunidades</p>
+          <p class="text-xs text-white/50 -mt-0.5 mb-1">stickers</p>
           <p class="text-dorado font-semibold text-sm">$<%= p.precio %></p>
         </a>
       <% }) %>
@@ -124,7 +136,7 @@
       <div class="border border-dorado/30 rounded-xl p-5">
         <p class="text-dorado font-display font-bold text-sm mb-2">01</p>
         <p class="font-display font-bold mb-1">Elige</p>
-        <p class="text-white/60 text-sm">Selecciona tus números.</p>
+        <p class="text-white/60 text-sm">Selecciona tus stickers.</p>
       </div>
       <div class="border border-dorado/30 rounded-xl p-5">
         <p class="text-dorado font-display font-bold text-sm mb-2">02</p>
@@ -143,7 +155,7 @@
   <section id="condiciones" class="max-w-4xl mx-auto px-4 py-10 border-t border-dorado/20 scroll-mt-20">
     <h2 class="font-display text-3xl font-bold mb-6">Condiciones principales</h2>
     <ul class="space-y-3 text-white/70 text-sm list-disc list-inside">
-      <li>Números disponibles: <%= rifa.total_numeros %>.</li>
+      <li>Stickers disponibles: <%= rifa.total_numeros %>.</li>
       <li>Sorteo: <%= new Date(rifa.fecha_sorteo).toLocaleDateString('es-CO') %>.</li>
       <li>Documentación, trámites y traspaso por cuenta del ganador.</li>
       <li>Antes de recibir pagos del público deben cumplirse las autorizaciones y condiciones legales aplicables.</li>
@@ -153,13 +165,13 @@
   <!-- Contacto -->
   <section id="contacto" class="text-center py-16 px-4 border-t border-dorado/20">
     <h2 class="font-display text-3xl sm:text-4xl font-bold mb-4">¿Dudas?<br>Escríbenos</h2>
-    <p class="text-white/70">WhatsApp <!-- 👈 pon aquí tu número --> 300 000 0000</p>
+    <p class="text-white/70">WhatsApp 300 000 0000</p>
   </section>
 
-  <!-- Buscar tus números -->
+  <!-- Buscar tus stickers -->
   <div class="text-center pb-10">
     <a href="/numeros/<%= rifa.id %>" class="text-dorado text-sm font-medium underline underline-offset-2">
-      🔍 Buscar tus números
+      🔍 Buscar tus stickers
     </a>
   </div>
 
@@ -169,7 +181,7 @@
 <div class="fixed bottom-0 left-0 right-0 sm:hidden bg-tinta border-t border-dorado/30 p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
   <a href="#paquetes"
      class="block w-full text-center bg-dorado text-tinta font-display font-semibold py-3 rounded-xl active:scale-[0.98] transition">
-    🎟️ Comprar oportunidades
+    🎟️ Selecciona tus stickers
   </a>
 </div>
 
