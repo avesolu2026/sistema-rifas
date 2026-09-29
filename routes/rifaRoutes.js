@@ -15,6 +15,7 @@ router.get('/admin/rifas', verificarAdmin, rifaController.listarRifas);
 router.get('/admin/rifas/crear', verificarAdmin, rifaController.mostrarFormularioCrear);
 router.get('/admin/rifas/:id/estadisticas', verificarAdmin, rifaController.mostrarEstadisticas);
 router.get('/admin/rifas/:id/numeros', verificarAdmin, rifaController.mostrarNumeros);
+router.post('/admin/rifas/:id/numeros/marcar', verificarAdmin, rifaController.marcarNumeros);
 router.get('/admin/rifas/:id/exportar', verificarAdmin, rifaController.exportarExcel);
 router.post('/admin/rifas/crear', verificarAdmin, upload.array('imagenes', 10), rifaController.crearRifa);
 router.get('/admin/rifas/:id/editar', verificarAdmin, rifaController.mostrarFormularioEditar);
