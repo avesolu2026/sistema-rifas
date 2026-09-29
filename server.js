@@ -7,6 +7,7 @@ const rifaRoutes = require('./routes/rifaRoutes');
 const compraRoutes = require('./routes/compraRoutes');
 const adminOrdenRoutes = require('./routes/adminOrdenRoutes');
 const authRoutes = require('./routes/authRoutes');
+const configRoutes = require('./routes/configRoutes');
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/', rifaRoutes);
 app.use('/', compraRoutes);
 app.use('/', adminOrdenRoutes);
 app.use('/', authRoutes);
+app.use('/', configRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
