@@ -11,7 +11,7 @@ const rifaController = {
 
   async crearRifa(req, res) {
     try {
-      const { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, loteria } = req.body;
+      const { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, loteria, nota_importante } = req.body;
       const totalNum = parseInt(total_numeros);
       const digitos = parseInt(digitos_boleta);
 
@@ -33,6 +33,8 @@ const rifaController = {
 
       const rifaId = await Rifa.crear({
         titulo,
+        subtitulo,
+        detalle_corto,
         descripcion,
         premio_imagenes: imagenes,
         total_numeros: totalNum,
@@ -40,7 +42,8 @@ const rifaController = {
         fecha_sorteo,
         digitos_boleta: digitos,
         paquetes: paquetesNums,
-        loteria
+        loteria,
+        nota_importante
       });
 
       await Numero.generarNumeros(rifaId, totalNum, digitos);
@@ -83,7 +86,7 @@ const rifaController = {
 
   async actualizarRifa(req, res) {
     try {
-      const { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria } = req.body;
+      const { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante } = req.body;
       const nuevoTotal = parseInt(total_numeros);
 
       const rifaActual = await Rifa.obtenerPorId(req.params.id);
@@ -103,11 +106,14 @@ const rifaController = {
 
       await Rifa.actualizar(req.params.id, {
         titulo,
+        subtitulo,
+        detalle_corto,
         descripcion,
         total_numeros: nuevoTotal,
         precio_numero: parseFloat(precio_numero),
         fecha_sorteo,
-        loteria
+        loteria,
+        nota_importante
       });
 
       if (nuevoTotal > totalActual) {
@@ -214,6 +220,21 @@ const rifaController = {
       rifa,
       numeros
     });
+  },
+
+  async marcarNumeros(req, res) {
+    try {
+      const { rifa_id, numeros, estado } = req.body;
+      let lista = numeros || [];
+      if (!Array.isArray(lista)) lista = [lista];
+
+      await Numero.marcarManual(rifa_id, lista, estado);
+
+      res.redirect('/admin/rifas/' + rifa_id + '/numeros');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al marcar números: ' + error.message);
+    }
   }
 };
 

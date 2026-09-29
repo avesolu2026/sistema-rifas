@@ -9,8 +9,20 @@
 
   <form action="/admin/rifas/crear" method="POST" enctype="multipart/form-data" class="space-y-4">
     <div>
-      <label class="block text-sm font-medium text-white/70">Título del premio</label>
-      <input type="text" name="titulo" required
+      <label class="block text-sm font-medium text-white/70">Título del premio (línea 1, en blanco)</label>
+      <input type="text" name="titulo" required placeholder="Ej: YAMAHA"
+             class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-white/70">Subtítulo (línea 2, en dorado)</label>
+      <input type="text" name="subtitulo" placeholder="Ej: NMAX 2027"
+             class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-white/70">Detalle corto (ej: 0 KM)</label>
+      <input type="text" name="detalle_corto" placeholder="Ej: 0 KM"
              class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
     </div>
 
@@ -63,6 +75,12 @@
       <label class="block text-sm font-medium text-white/70">Lotería con la que juega</label>
       <input type="text" name="loteria" placeholder="Ej: Lotería de Boyacá"
              class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-white/70">Nota importante (aparece en la página)</label>
+      <textarea name="nota_importante" rows="2" placeholder="Ej: Documentación y traspaso por cuenta del ganador."
+                class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent"></textarea>
     </div>
 
     <div>

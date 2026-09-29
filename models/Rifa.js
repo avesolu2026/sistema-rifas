@@ -1,11 +1,11 @@
 const db = require('../config/db');
 
 const Rifa = {
-  async crear({ titulo, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria }) {
+  async crear({ titulo, subtitulo, detalle_corto, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria, nota_importante }) {
     const [result] = await db.query(
-      `INSERT INTO rifas (titulo, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [titulo, descripcion, JSON.stringify(premio_imagenes), total_numeros, precio_numero, fecha_sorteo, digitos_boleta, JSON.stringify(paquetes), loteria]
+      `INSERT INTO rifas (titulo, subtitulo, detalle_corto, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria, nota_importante)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [titulo, subtitulo, detalle_corto, descripcion, JSON.stringify(premio_imagenes), total_numeros, precio_numero, fecha_sorteo, digitos_boleta, JSON.stringify(paquetes), loteria, nota_importante]
     );
     return result.insertId;
   },
@@ -20,11 +20,11 @@ const Rifa = {
     return rows[0];
   },
 
-  async actualizar(id, { titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria }) {
+  async actualizar(id, { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante }) {
     await db.query(
-      `UPDATE rifas SET titulo = ?, descripcion = ?, total_numeros = ?, precio_numero = ?, fecha_sorteo = ?, loteria = ?
+      `UPDATE rifas SET titulo = ?, subtitulo = ?, detalle_corto = ?, descripcion = ?, total_numeros = ?, precio_numero = ?, fecha_sorteo = ?, loteria = ?, nota_importante = ?
        WHERE id = ?`,
-      [titulo, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, id]
+      [titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante, id]
     );
   },
 

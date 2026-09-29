@@ -11,7 +11,6 @@ const Numero = {
   },
 
   async aumentarNumeros(rifa_id, totalActual, nuevoTotal, digitos) {
-    // Genera solo los números que faltan, con el mismo ancho de dígitos fijo de la rifa
     const valoresNuevos = [];
     for (let i = totalActual + 1; i <= nuevoTotal; i++) {
       const numeroFormateado = String(i).padStart(digitos, '0');
@@ -96,6 +95,15 @@ const Numero = {
       [rifa_id]
     );
     return rows;
+  },
+
+  async marcarManual(rifa_id, numeros, estado) {
+    if (!numeros || numeros.length === 0) return;
+
+    await db.query(
+      `UPDATE numeros SET estado = ? WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
+      [estado, rifa_id, numeros]
+    );
   }
 };
 
