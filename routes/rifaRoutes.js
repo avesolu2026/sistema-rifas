@@ -7,6 +7,7 @@ const verificarAdmin = require('../middleware/verificarAdmin');
 
 // Ruta pública
 router.get('/venta-numeros/:id', publicController.mostrarRifa);
+router.get('/terminos', publicController.mostrarTerminos);
 router.get('/numeros/:id', publicController.mostrarBusqueda);
 router.post('/numeros/:id', publicController.procesarBusqueda);
 

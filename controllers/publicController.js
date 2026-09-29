@@ -1,5 +1,6 @@
 const Rifa = require('../models/Rifa');
 const Numero = require('../models/Numero');
+const Configuracion = require('../models/Configuracion');
 
 const publicController = {
   async mostrarRifa(req, res) {
@@ -14,7 +15,6 @@ const publicController = {
     const vendidos = rifa.total_numeros - disponibles;
     const porcentajeVendido = ((vendidos / rifa.total_numeros) * 100).toFixed(2);
 
-    // Usa los paquetes definidos para esta rifa; si es una rifa vieja sin ese campo, usa una lista por defecto
     const paquetesGuardados = rifa.paquetes ? JSON.parse(rifa.paquetes) : [];
     const cantidades = paquetesGuardados.length > 0
       ? paquetesGuardados
@@ -27,13 +27,20 @@ const publicController = {
         precio: (c * rifa.precio_numero).toLocaleString('es-CO')
       }));
 
+    const config = await Configuracion.obtener();
+
     res.render('rifa-publica', {
       title: rifa.titulo,
       rifa,
       imagenes: JSON.parse(rifa.premio_imagenes || '[]'),
       porcentajeVendido,
-      paquetes
+      paquetes,
+      whatsapp: config.whatsapp
     });
+  },
+
+  mostrarTerminos(req, res) {
+    res.render('terminos', { title: 'Términos y Condiciones' });
   },
 
   async mostrarBusqueda(req, res) {
