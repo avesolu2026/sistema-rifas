@@ -91,18 +91,20 @@ const Numero = {
 
   async obtenerTodosPorRifa(rifa_id) {
     const [rows] = await db.query(
-      `SELECT numero, estado FROM numeros WHERE rifa_id = ? ORDER BY numero`,
+      `SELECT numero, estado, reservado_para FROM numeros WHERE rifa_id = ? ORDER BY numero`,
       [rifa_id]
     );
     return rows;
   },
 
-  async marcarManual(rifa_id, numeros, estado) {
+  async marcarManual(rifa_id, numeros, estado, nombreReserva) {
     if (!numeros || numeros.length === 0) return;
 
+    const nombreAGuardar = estado === 'reservado' ? (nombreReserva || null) : null;
+
     await db.query(
-      `UPDATE numeros SET estado = ? WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
-      [estado, rifa_id, numeros]
+      `UPDATE numeros SET estado = ?, reservado_para = ? WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
+      [estado, nombreAGuardar, rifa_id, numeros]
     );
   }
 };

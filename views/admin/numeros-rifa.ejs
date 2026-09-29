@@ -10,20 +10,18 @@
       <p class="text-sm text-white/50 mt-0.5"><%= numeros.length %> números mostrados</p>
     </div>
 
-    <!-- Filtro -->
-    <form method="GET" class="flex flex-wrap gap-3 mb-5">
-      <input type="text" name="busqueda" value="<%= filtroBusqueda %>" placeholder="Buscar número, ej: 0props"
-             class="bg-black border border-dorado/25 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-dorado">
-      <select name="estado" class="bg-black border border-dorado/25 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-dorado">
-        <option value="todos" <%= filtroEstado === 'todos' ? 'selected' : '' %>>Todos</option>
-        <option value="disponible" <%= filtroEstado === 'disponible' ? 'selected' : '' %>>Disponible</option>
-        <option value="reservado" <%= filtroEstado === 'reservado' ? 'selected' : '' %>>Reservado</option>
-        <option value="vendido" <%= filtroEstado === 'vendido' ? 'selected' : '' %>>Vendido</option>
+    <!-- Búsqueda instantánea -->
+    <div class="flex flex-wrap gap-3 mb-5">
+      <input type="text" id="buscadorInstantaneo" placeholder="Escribe un número para buscarlo, ej: 0057"
+             class="bg-black border border-dorado/25 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-dorado flex-1 min-w-[200px]">
+
+      <select id="filtroEstadoInstantaneo" class="bg-black border border-dorado/25 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-dorado">
+        <option value="todos">Todos los estados</option>
+        <option value="disponible">Disponible</option>
+        <option value="reservado">Reservado</option>
+        <option value="vendido">Vendido</option>
       </select>
-      <button type="submit" class="bg-dorado text-tinta font-semibold text-sm px-4 py-2 rounded-xl hover:opacity-90 transition">
-        Filtrar
-      </button>
-    </form>
+    </div>
 
     <!-- Leyenda -->
     <div class="flex flex-wrap gap-4 mb-5 text-xs">
@@ -32,13 +30,14 @@
       <span class="flex items-center gap-1.5 text-white/60"><span class="w-3 h-3 rounded bg-green-500 inline-block"></span> Vendido</span>
     </div>
 
-    <form method="POST" action="/admin/rifas/<%= rifa.id %>/numeros/marcar">
+    <form method="POST" action="/admin/rifas/<%= rifa.id %>/numeros/marcar" id="formNumeros">
       <div class="bg-black rounded-2xl border border-dorado/20 p-4">
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(56px,1fr))] gap-1.5">
+        <div id="grillaNumeros" class="grid grid-cols-[repeat(auto-fill,minmax(56px,1fr))] gap-1.5">
           <% numeros.forEach(n => { %>
-            <label class="relative cursor-pointer">
+            <label class="fila-numero relative cursor-pointer" data-numero="<%= n.numero %>" data-estado="<%= n.estado %>"
+                   title="<%= n.reservado_para ? 'Reservado para: ' + n.reservado_para : '' %>">
               <% if (n.estado !== 'vendido') { %>
-                <input type="checkbox" name="numeros" value="<%= n.numero %>" class="peer sr-only">
+                <input type="checkbox" name="numeros" value="<%= n.numero %>" class="peer sr-only checkbox-numero">
               <% } %>
               <span class="block text-center text-[11px] font-semibold py-1.5 rounded transition
                 <%= n.estado === 'vendido' ? 'bg-green-500/15 text-green-400 cursor-not-allowed' :
@@ -46,23 +45,102 @@
                     'bg-white/10 text-white/50 peer-checked:ring-2 peer-checked:ring-dorado peer-checked:bg-dorado/20 peer-checked:text-dorado' %>">
                 <%= String(n.numero).padStart(4, '0') %>
               </span>
+              <% if (n.estado === 'reservado' && n.reservado_para) { %>
+                <span class="block text-center text-[8px] text-dorado/70 truncate px-0.5"><%= n.reservado_para %></span>
+              <% } %>
             </label>
           <% }) %>
         </div>
+        <p id="sinResultados" class="text-white/40 text-sm text-center py-6 hidden">No se encontraron números con ese filtro.</p>
       </div>
 
-      <div class="flex flex-wrap gap-3 mt-4">
+      <div class="flex flex-wrap items-center gap-3 mt-4">
+        <span id="contadorSeleccion" class="text-sm text-white/50">0 seleccionados</span>
+        <input type="text" name="nombre_reserva" id="nombreReserva" placeholder="Nombre de quien reserva (ej: Juan Pérez)"
+               class="bg-black border border-dorado/25 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-dorado">
         <button type="submit" name="estado" value="reservado"
                 class="bg-dorado text-tinta font-semibold text-sm px-4 py-2.5 rounded-xl hover:opacity-90 transition">
-          🔒 Reservar seleccionados (excluir del azar)
+          🔒 Reservar seleccionados
         </button>
         <button type="submit" name="estado" value="disponible"
                 class="bg-white/10 text-white font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-white/20 transition">
-          🔓 Liberar seleccionados (volver a disponible)
+          🔓 Liberar seleccionados
         </button>
       </div>
-      <p class="text-xs text-white/40 mt-2">Marca las casillas de los números que un vendedor ya apartó manualmente y dale "Reservar" — así no saldrán en las compras al azar de la página pública. Los números vendidos no se pueden modificar aquí.</p>
+      <p class="text-xs text-white/40 mt-2">Marca los números que un vendedor ya apartó, escribe el nombre de esa persona, y dale "Reservar" — quedan excluidos de las compras al azar de la página pública hasta que los liberes.</p>
     </form>
 
   </div>
 </div>
+
+<script>
+  const inputBusqueda = document.getElementById('buscadorInstantaneo');
+  const selectEstado = document.getElementById('filtroEstadoInstantaneo');
+  const filas = document.querySelectorAll('.fila-numero');
+  const sinResultados = document.getElementById('sinResultados');
+  const contador = document.getElementById('contadorSeleccion');
+  const form = document.getElementById('formNumeros');
+  const inputNombre = document.getElementById('nombreReserva');
+
+  function aplicarFiltro() {
+    const texto = inputBusqueda.value.trim();
+    const estado = selectEstado.value;
+    let visibles = 0;
+
+    filas.forEach(fila => {
+      const numero = fila.dataset.numero;
+      const estadoFila = fila.dataset.estado;
+      const coincideTexto = !texto || numero.includes(texto);
+      const coincideEstado = estado === 'todos' || estadoFila === estado;
+
+      if (coincideTexto && coincideEstado) {
+        fila.style.display = '';
+        visibles++;
+      } else {
+        fila.style.display = 'none';
+      }
+    });
+
+    sinResultados.classList.toggle('hidden', visibles > 0);
+  }
+
+  inputBusqueda.addEventListener('input', aplicarFiltro);
+  selectEstado.addEventListener('change', aplicarFiltro);
+
+  function actualizarContador() {
+    const seleccionados = document.querySelectorAll('.checkbox-numero:checked').length;
+    contador.textContent = seleccionados + ' seleccionados';
+  }
+
+  document.querySelectorAll('.checkbox-numero').forEach(cb => {
+    cb.addEventListener('change', actualizarContador);
+  });
+
+  form.addEventListener('submit', function (e) {
+    const seleccionados = document.querySelectorAll('.checkbox-numero:checked');
+    const accion = e.submitter ? e.submitter.value : null;
+
+    if (seleccionados.length === 0) {
+      e.preventDefault();
+      alert('Selecciona al menos un número primero.');
+      return;
+    }
+
+    if (accion === 'reservado' && !inputNombre.value.trim()) {
+      e.preventDefault();
+      alert('Escribe el nombre de la persona para quien estás reservando estos números.');
+      inputNombre.focus();
+      return;
+    }
+
+    const numerosTexto = Array.from(seleccionados).map(cb => cb.value).join(', ');
+    const verbo = accion === 'reservado'
+      ? `RESERVAR para "${inputNombre.value.trim()}"`
+      : 'LIBERAR (volver a disponible)';
+    const confirmar = confirm(`¿Seguro que quieres ${verbo} estos ${seleccionados.length} números?\n\n${numerosTexto}`);
+
+    if (!confirmar) {
+      e.preventDefault();
+    }
+  });
+</script>
