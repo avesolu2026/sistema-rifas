@@ -10,6 +10,7 @@ const authRoutes = require('./routes/authRoutes');
 const configRoutes = require('./routes/configRoutes');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // Configuración de vistas
 app.set('view engine', 'ejs');
