@@ -20,6 +20,16 @@ function verificarFirmaWebhook(payload, eventsSecret) {
   cadena += eventsSecret;
 
   const checksumCalculado = crypto.createHash('sha256').update(cadena).digest('hex').toUpperCase();
+
+  // --- Diagnóstico temporal ---
+  console.log('--- DEBUG FIRMA WEBHOOK ---');
+  console.log('Properties:', signature.properties);
+  console.log('Timestamp:', timestamp);
+  console.log('Cadena (sin el secreto, por seguridad):', cadena.replace(eventsSecret, '[SECRETO]'));
+  console.log('Checksum calculado:', checksumCalculado);
+  console.log('Checksum esperado (de Wompi):', signature.checksum.toUpperCase());
+  console.log('---------------------------');
+
   return checksumCalculado === signature.checksum.toUpperCase();
 }
 
@@ -109,7 +119,7 @@ const compraController = {
     });
   },
 
-    async webhookWompi(req, res) {
+  async webhookWompi(req, res) {
     try {
       const payload = req.body;
 
