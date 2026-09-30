@@ -31,27 +31,42 @@ const Numero = {
   },
 
   async asignarAleatorios(rifa_id, cantidad, orden_id) {
-    const [disponibles] = await db.query(
-      `SELECT id FROM numeros WHERE rifa_id = ? AND estado = 'disponible' ORDER BY RAND() LIMIT ?`,
-      [rifa_id, cantidad]
-    );
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
 
-    if (disponibles.length < cantidad) {
-      throw new Error('No hay suficientes números disponibles');
+      const [disponibles] = await connection.query(
+        `SELECT id FROM numeros WHERE rifa_id = ? AND estado = 'disponible' ORDER BY RAND() LIMIT ? FOR UPDATE`,
+        [rifa_id, cantidad]
+      );
+
+      if (disponibles.length < cantidad) {
+        await connection.rollback();
+        connection.release();
+        throw new Error('No hay suficientes números disponibles');
+      }
+
+      const ids = disponibles.map(n => n.id);
+
+      await connection.query(
+        `UPDATE numeros SET estado = 'reservado', orden_id = ? WHERE id IN (?)`,
+        [orden_id, ids]
+      );
+
+      const [numerosAsignados] = await connection.query(
+        `SELECT numero FROM numeros WHERE id IN (?)`,
+        [ids]
+      );
+
+      await connection.commit();
+      connection.release();
+
+      return numerosAsignados.map(n => n.numero);
+    } catch (error) {
+      await connection.rollback();
+      connection.release();
+      throw error;
     }
-
-    const ids = disponibles.map(n => n.id);
-
-    await db.query(
-      `UPDATE numeros SET estado = 'reservado', orden_id = ? WHERE id IN (?)`,
-      [orden_id, ids]
-    );
-
-    const [numerosAsignados] = await db.query(
-      `SELECT numero FROM numeros WHERE id IN (?)`,
-      [ids]
-    );
-    return numerosAsignados.map(n => n.numero);
   },
 
   async obtenerPorOrden(orden_id) {
