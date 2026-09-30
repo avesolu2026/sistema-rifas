@@ -85,7 +85,7 @@ const compraController = {
     const referencia = `orden-${orden.id}`;
     const montoEnCentavos = Math.round(Number(orden.valor_total) * 100);
     const moneda = 'COP';
-    const secreto = process.env.WOMPI_INTEGRITY_SECRET;
+    const secreto = (process.env.WOMPI_INTEGRITY_SECRET || '').trim();
 
     const cadenaConcatenada = `${referencia}${montoEnCentavos}${moneda}${secreto}`;
     const firmaIntegridad = crypto
@@ -131,7 +131,7 @@ const compraController = {
       console.log('Webhook Wompi recibido:', payload.event, payload.data?.transaction?.reference, payload.data?.transaction?.status);
 
       // Verificar que el webhook sea legítimo
-      const esValido = verificarFirmaWebhook(payload, process.env.WOMPI_EVENTS_SECRET);
+      const esValido = verificarFirmaWebhook(payload, (process.env.WOMPI_EVENTS_SECRET || '').trim());
       if (!esValido) {
         console.warn('Webhook de Wompi con firma inválida, ignorado.');
         return res.status(400).send('Firma inválida');
