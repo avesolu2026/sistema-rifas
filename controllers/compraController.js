@@ -86,7 +86,7 @@ const compraController = {
     const montoEnCentavos = Math.round(Number(orden.valor_total) * 100);
     const moneda = 'COP';
     const secreto = (process.env.WOMPI_INTEGRITY_SECRET || '').replace(/[^A-Za-z0-9_]/g, '');
-console.log('Largo secreto limpio:', secreto.length);
+
 
     const cadenaConcatenada = `${referencia}${montoEnCentavos}${moneda}${secreto}`;
     const firmaIntegridad = crypto
