@@ -20,16 +20,6 @@ function verificarFirmaWebhook(payload, eventsSecret) {
   cadena += eventsSecret;
 
   const checksumCalculado = crypto.createHash('sha256').update(cadena).digest('hex').toUpperCase();
-
-  // --- Diagnóstico temporal ---
-  console.log('--- DEBUG FIRMA WEBHOOK ---');
-  console.log('Properties:', signature.properties);
-  console.log('Timestamp:', timestamp);
-  console.log('Cadena (sin el secreto, por seguridad):', cadena.replace(eventsSecret, '[SECRETO]'));
-  console.log('Checksum calculado:', checksumCalculado);
-  console.log('Checksum esperado (de Wompi):', signature.checksum.toUpperCase());
-  console.log('---------------------------');
-
   return checksumCalculado === signature.checksum.toUpperCase();
 }
 
@@ -103,6 +93,20 @@ const compraController = {
       .update(cadenaConcatenada)
       .digest('hex');
 
+    // --- Diagnóstico temporal (no imprime el secreto) ---
+    console.log('DEBUG INTEGRIDAD:', {
+      referencia,
+      montoEnCentavos,
+      moneda,
+      valorTotalOriginal: orden.valor_total,
+      tipoValorTotal: typeof orden.valor_total,
+      largoSecreto: secreto ? secreto.length : null,
+      inicioSecreto: secreto ? secreto.slice(0, 15) : null,
+      tieneEspaciosOComillas: secreto ? (secreto !== secreto.trim() || /["'\s]/.test(secreto)) : null,
+      inicioLlavePublica: process.env.WOMPI_PUBLIC_KEY ? process.env.WOMPI_PUBLIC_KEY.slice(0, 9) : null,
+      largoLlavePublica: process.env.WOMPI_PUBLIC_KEY ? process.env.WOMPI_PUBLIC_KEY.length : null
+    });
+
     // URL a la que Wompi devuelve al comprador después de pagar
     const redirectUrl = `${req.protocol}://${req.get('host')}/comprar/${rifaId}/confirmar/${ordenId}`;
 
@@ -119,6 +123,7 @@ const compraController = {
     });
   },
 
+  // Wompi llama aquí automáticamente cuando el pago cambia de estado
   async webhookWompi(req, res) {
     try {
       const payload = req.body;
@@ -153,6 +158,6 @@ const compraController = {
       res.status(500).send('Error procesando webhook');
     }
   }
-}
+};
 
 module.exports = compraController;
