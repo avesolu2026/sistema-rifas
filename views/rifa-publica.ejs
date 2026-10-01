@@ -117,10 +117,14 @@
     </div>
 
     <div class="text-center mt-8">
-      <p class="font-display text-lg font-bold text-white mb-3">Si deseas más</p>
+      <p class="font-display text-lg font-bold text-white">Si deseas más</p>
+      <p class="text-xs text-dorado/80 font-semibold uppercase tracking-wide mt-1 mb-3">Compra mínima: 5 stickers</p>
       <form action="/comprar/<%= rifa.id %>" method="GET" class="flex items-center justify-center gap-3">
-        <input type="number" name="cantidad" min="1" value="1"
-               class="w-20 text-center bg-white text-black rounded-lg px-3 py-2.5 font-semibold focus:outline-none focus:ring-2 focus:ring-dorado">
+        <input type="number" name="cantidad" min="5" step="1" required
+               placeholder="Mín. 5" inputmode="numeric"
+               oninvalid="this.setCustomValidity('La compra mínima es de 5 stickers')"
+               oninput="this.setCustomValidity('')"
+               class="w-24 text-center bg-white text-black rounded-lg px-3 py-2.5 font-semibold focus:outline-none focus:ring-2 focus:ring-dorado">
         <button type="submit"
                 class="bg-green-500 text-white font-display font-semibold text-sm px-5 py-2.5 rounded-full hover:bg-green-600 transition flex items-center gap-2">
           🛒 Comprar más stickers
