@@ -31,9 +31,9 @@ app.use('/', adminOrdenRoutes);
 app.use('/', authRoutes);
 app.use('/', configRoutes);
 
-// Ruta de prueba
+// Página principal: redirige directo a la rifa activa
 app.get('/', (req, res) => {
-  res.render('index', { title: 'Sistema de Rifas' });
+  res.redirect('/venta-numeros/9');
 });
 
 const PORT = process.env.PORT || 3000;
