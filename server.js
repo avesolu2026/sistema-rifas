@@ -33,7 +33,7 @@ app.use('/', configRoutes);
 
 // Página principal: redirige directo a la rifa activa
 app.get('/', (req, res) => {
-  res.redirect('/venta-numeros/9');
+  res.redirect('/venta-numeros/11');
 });
 
 const PORT = process.env.PORT || 3000;
