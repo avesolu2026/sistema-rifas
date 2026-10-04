@@ -1,3 +1,4 @@
+<% const minimo = rifa.compra_minima || 5; %>
 <style>
   .carrusel::-webkit-scrollbar { display: none; }
   .carrusel { -ms-overflow-style: none; scrollbar-width: none; }
@@ -84,9 +85,11 @@
 
   <!-- Progreso + precio -->
   <section class="max-w-2xl mx-auto px-4 mt-4">
+    <% if (minimo > 1) { %>
     <p class="text-center text-xs text-dorado/80 font-semibold uppercase tracking-wide mb-3">
-      🎫 Compra mínima: 5 stickers
+      🎫 Compra mínima: <%= minimo %> stickers
     </p>
+    <% } %>
     <div class="flex justify-between text-sm font-medium text-white/50 mb-1.5">
       <span>Vendido</span>
       <span class="text-dorado font-semibold"><%= porcentajeVendido %>%</span>
@@ -118,11 +121,13 @@
 
     <div class="text-center mt-8">
       <p class="font-display text-lg font-bold text-white">Si deseas más</p>
-      <p class="text-xs text-dorado/80 font-semibold uppercase tracking-wide mt-1 mb-3">Compra mínima: 5 stickers</p>
+      <% if (minimo > 1) { %>
+      <p class="text-xs text-dorado/80 font-semibold uppercase tracking-wide mt-1 mb-3">Compra mínima: <%= minimo %> stickers</p>
+      <% } %>
       <form action="/comprar/<%= rifa.id %>" method="GET" class="flex items-center justify-center gap-3">
-        <input type="number" name="cantidad" min="5" step="1" required
-               placeholder="Mín. 5" inputmode="numeric"
-               oninvalid="this.setCustomValidity('La compra mínima es de 5 stickers')"
+        <input type="number" name="cantidad" min="<%= minimo %>" step="1" required
+               placeholder="Mín. <%= minimo %>" inputmode="numeric"
+               oninvalid="this.setCustomValidity('La compra mínima es de <%= minimo %> stickers')"
                oninput="this.setCustomValidity('')"
                class="w-24 text-center bg-white text-black rounded-lg px-3 py-2.5 font-semibold focus:outline-none focus:ring-2 focus:ring-dorado">
         <button type="submit"

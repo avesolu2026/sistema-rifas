@@ -1,11 +1,11 @@
 const db = require('../config/db');
 
 const Rifa = {
-  async crear({ titulo, subtitulo, detalle_corto, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria, nota_importante }) {
+  async crear({ titulo, subtitulo, detalle_corto, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria, nota_importante, compra_minima }) {
     const [result] = await db.query(
-      `INSERT INTO rifas (titulo, subtitulo, detalle_corto, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria, nota_importante)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [titulo, subtitulo, detalle_corto, descripcion, JSON.stringify(premio_imagenes), total_numeros, precio_numero, fecha_sorteo, digitos_boleta, JSON.stringify(paquetes), loteria, nota_importante]
+      `INSERT INTO rifas (titulo, subtitulo, detalle_corto, descripcion, premio_imagenes, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, paquetes, loteria, nota_importante, compra_minima)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [titulo, subtitulo, detalle_corto, descripcion, JSON.stringify(premio_imagenes), total_numeros, precio_numero, fecha_sorteo, digitos_boleta, JSON.stringify(paquetes), loteria, nota_importante, compra_minima || 5]
     );
     return result.insertId;
   },
@@ -20,11 +20,11 @@ const Rifa = {
     return rows[0];
   },
 
-  async actualizar(id, { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante }) {
+  async actualizar(id, { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante, compra_minima }) {
     await db.query(
-      `UPDATE rifas SET titulo = ?, subtitulo = ?, detalle_corto = ?, descripcion = ?, total_numeros = ?, precio_numero = ?, fecha_sorteo = ?, loteria = ?, nota_importante = ?
+      `UPDATE rifas SET titulo = ?, subtitulo = ?, detalle_corto = ?, descripcion = ?, total_numeros = ?, precio_numero = ?, fecha_sorteo = ?, loteria = ?, nota_importante = ?, compra_minima = ?
        WHERE id = ?`,
-      [titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante, id]
+      [titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante, compra_minima || 5, id]
     );
   },
 

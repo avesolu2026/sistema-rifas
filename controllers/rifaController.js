@@ -12,7 +12,7 @@ const rifaController = {
 
   async crearRifa(req, res) {
     try {
-      const { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, loteria, nota_importante } = req.body;
+      const { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, digitos_boleta, loteria, nota_importante, compra_minima } = req.body;
       const totalNum = parseInt(total_numeros);
       const digitos = parseInt(digitos_boleta);
 
@@ -44,7 +44,8 @@ const rifaController = {
         digitos_boleta: digitos,
         paquetes: paquetesNums,
         loteria,
-        nota_importante
+        nota_importante,
+        compra_minima: Math.max(1, parseInt(compra_minima) || 5)
       });
 
       await Numero.generarNumeros(rifaId, totalNum, digitos);
@@ -87,7 +88,7 @@ const rifaController = {
 
   async actualizarRifa(req, res) {
     try {
-      const { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante } = req.body;
+      const { titulo, subtitulo, detalle_corto, descripcion, total_numeros, precio_numero, fecha_sorteo, loteria, nota_importante, compra_minima } = req.body;
       const nuevoTotal = parseInt(total_numeros);
 
       const rifaActual = await Rifa.obtenerPorId(req.params.id);
@@ -114,7 +115,8 @@ const rifaController = {
         precio_numero: parseFloat(precio_numero),
         fecha_sorteo,
         loteria,
-        nota_importante
+        nota_importante,
+        compra_minima: Math.max(1, parseInt(compra_minima) || 5)
       });
 
       if (nuevoTotal > totalActual) {
@@ -223,7 +225,6 @@ const rifaController = {
     });
   },
 
-  // CAMBIO: se agregó la rama estado === 'vendido'
   async marcarNumeros(req, res) {
     try {
       const rifaId = req.params.id;
