@@ -1,3 +1,4 @@
+<% const minimo = rifa.compra_minima || 5; %>
 <div class="min-h-screen py-8 px-4">
   <div class="max-w-lg mx-auto">
 
@@ -13,9 +14,14 @@
 
         <div>
           <label class="block text-sm font-medium text-tinta/70 mb-1">Cantidad de oportunidades</label>
-          <input type="number" name="cantidad" required min="1" value="<%= cantidad %>"
+          <input type="number" name="cantidad" required min="<%= minimo %>" value="<%= cantidad %>"
                  inputmode="numeric"
+                 oninvalid="this.setCustomValidity('La compra mínima es de <%= minimo %> números')"
+                 oninput="this.setCustomValidity('')"
                  class="w-full border border-tinta/15 rounded-xl px-4 py-3 text-tinta font-display font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-boleto focus:border-transparent">
+          <% if (minimo > 1) { %>
+            <p class="text-xs text-tinta/40 mt-1">Compra mínima: <%= minimo %> números.</p>
+          <% } %>
         </div>
 
         <div class="h-px bg-tinta/5 my-2"></div>
