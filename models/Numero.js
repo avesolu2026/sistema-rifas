@@ -128,15 +128,61 @@ const Numero = {
   },
 
   // NUEVO: marca como vendidos números que están reservados y guarda quién pagó
-  async venderManual(rifa_id, numeros, comprador) {
-    const [r] = await db.query(
-      `UPDATE numeros
-          SET estado = 'vendido', comprador = ?, vendido_en = NOW()
-        WHERE rifa_id = ? AND numero IN (?) AND estado = 'reservado'`,
-      [comprador, rifa_id, numeros]
-    );
-    return r.affectedRows;
-  }
-};
+    async venderManual(rifa_id, numeros, comprador) {
+    const connection = await db.getConnection();
+    try {
+      await connection.beginTransaction();
 
+      // Órdenes que se van a ver afectadas
+      const [filas] = await connection.query(
+        `SELECT DISTINCT orden_id FROM numeros
+          WHERE rifa_id = ? AND numero IN (?) AND estado = 'reservado' AND orden_id IS NOT NULL`,
+        [rifa_id, numeros]
+      );
+      const ordenIds = filas.map(f => f.orden_id);
+
+      // Marcar como vendidos y sacarlos de la orden
+      const [r] = await connection.query(
+        `UPDATE numeros
+            SET estado = 'vendido', comprador = ?, vendido_en = NOW(), orden_id = NULL
+          WHERE rifa_id = ? AND numero IN (?) AND estado = 'reservado'`,
+        [comprador, rifa_id, numeros]
+      );
+
+      // Recalcular cada orden con los números que le quedan
+      const [[{ precio }]] = await connection.query(
+        `SELECT precio_numero AS precio FROM rifas WHERE id = ?`,
+        [rifa_id]
+      );
+
+      for (const ordenId of ordenIds) {
+        const [[{ restantes }]] = await connection.query(
+          `SELECT COUNT(*) AS restantes FROM numeros WHERE orden_id = ?`,
+          [ordenId]
+        );
+
+        if (restantes === 0) {
+          // Ya no queda nada por cobrar en esta orden: se cierra
+          await connection.query(
+            `UPDATE ordenes SET cantidad_numeros = 0, valor_total = 0, estado = 'aprobado' WHERE id = ?`,
+            [ordenId]
+          );
+        } else {
+          await connection.query(
+            `UPDATE ordenes SET cantidad_numeros = ?, valor_total = ? WHERE id = ?`,
+            [restantes, restantes * precio, ordenId]
+          );
+        }
+      }
+
+      await connection.commit();
+      connection.release();
+      return r.affectedRows;
+    } catch (error) {
+      await connection.rollback();
+      connection.release();
+      throw error;
+    }
+  }
+}
 module.exports = Numero;
