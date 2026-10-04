@@ -2,6 +2,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 
+// Obtiene el id del admin que tiene la sesión abierta
+function idAdminActual(req) {
+  if (req.admin && req.admin.id) return req.admin.id;
+  try {
+    return jwt.verify(req.cookies.token, process.env.JWT_SECRET).id;
+  } catch (e) {
+    return null;
+  }
+}
+
 const authController = {
   mostrarLogin(req, res) {
     res.render('admin/login', { title: 'Iniciar sesión', error: null });
@@ -67,6 +77,57 @@ const authController = {
     } catch (error) {
       console.error(error);
       res.status(500).send('Error al crear usuario: ' + error.message);
+    }
+  },
+
+  mostrarCambiarPassword(req, res) {
+    res.render('admin/cambiar-password', {
+      title: 'Cambiar contraseña',
+      error: null,
+      exito: null
+    });
+  },
+
+  async cambiarPassword(req, res) {
+    const vista = (error, exito) =>
+      res.render('admin/cambiar-password', { title: 'Cambiar contraseña', error, exito });
+
+    try {
+      const { passwordActual, passwordNueva, confirmarPassword } = req.body;
+
+      const adminId = idAdminActual(req);
+      if (!adminId) return res.redirect('/admin/login');
+
+      const admin = await Admin.obtenerPorId(adminId);
+      if (!admin) return res.redirect('/admin/login');
+
+      if (!passwordActual || !passwordNueva || !confirmarPassword) {
+        return vista('Completa todos los campos', null);
+      }
+
+      const coincideActual = await bcrypt.compare(passwordActual, admin.password_hash);
+      if (!coincideActual) {
+        return vista('La contraseña actual no es correcta', null);
+      }
+
+      if (passwordNueva.length < 8) {
+        return vista('La nueva contraseña debe tener al menos 8 caracteres', null);
+      }
+
+      if (passwordNueva !== confirmarPassword) {
+        return vista('La nueva contraseña y su confirmación no coinciden', null);
+      }
+
+      if (passwordNueva === passwordActual) {
+        return vista('La nueva contraseña debe ser diferente a la actual', null);
+      }
+
+      await Admin.cambiarPassword(adminId, passwordNueva);
+
+      return vista(null, 'Contraseña actualizada correctamente');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al cambiar la contraseña: ' + error.message);
     }
   }
 };

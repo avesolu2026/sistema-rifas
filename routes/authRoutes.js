@@ -10,4 +10,7 @@ router.post('/admin/logout', authController.logout);
 router.get('/admin/usuarios/crear', verificarAdmin, authController.mostrarFormularioCrearUsuario);
 router.post('/admin/usuarios/crear', verificarAdmin, authController.crearUsuario);
 
+router.get('/admin/cambiar-password', verificarAdmin, authController.mostrarCambiarPassword);
+router.post('/admin/cambiar-password', verificarAdmin, authController.cambiarPassword);
+
 module.exports = router;
