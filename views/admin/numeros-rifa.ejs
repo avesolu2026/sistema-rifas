@@ -34,10 +34,19 @@
       <div class="bg-black rounded-2xl border border-dorado/20 p-4">
         <div id="grillaNumeros" class="grid grid-cols-[repeat(auto-fill,minmax(56px,1fr))] gap-1.5">
           <% numeros.forEach(n => { %>
+            <%
+              let tooltip = '';
+              if (n.estado === 'vendido') {
+                tooltip = 'Pagó: ' + (n.comprador || 'sin nombre');
+                if (n.reservado_para) tooltip += ' (vendedor: ' + n.reservado_para + ')';
+              } else if (n.reservado_para) {
+                tooltip = 'Reservado para: ' + n.reservado_para;
+              }
+            %>
             <label class="fila-numero relative cursor-pointer" data-numero="<%= n.numero %>" data-estado="<%= n.estado %>"
-                   title="<%= n.reservado_para ? 'Reservado para: ' + n.reservado_para : '' %>">
+                   title="<%= tooltip %>">
               <% if (n.estado !== 'vendido') { %>
-                <input type="checkbox" name="numeros" value="<%= n.numero %>" class="peer sr-only checkbox-numero">
+                <input type="checkbox" name="numeros" value="<%= n.numero %>" data-estado="<%= n.estado %>" class="peer sr-only checkbox-numero">
               <% } %>
               <span class="block text-center text-[11px] font-semibold py-1.5 rounded transition
                 <%= n.estado === 'vendido' ? 'bg-green-500/15 text-green-400 cursor-not-allowed' :
@@ -48,6 +57,9 @@
               <% if (n.estado === 'reservado' && n.reservado_para) { %>
                 <span class="block text-center text-[8px] text-dorado/70 truncate px-0.5"><%= n.reservado_para %></span>
               <% } %>
+              <% if (n.estado === 'vendido' && n.comprador) { %>
+                <span class="block text-center text-[8px] text-green-400/80 truncate px-0.5"><%= n.comprador %></span>
+              <% } %>
             </label>
           <% }) %>
         </div>
@@ -56,18 +68,25 @@
 
       <div class="flex flex-wrap items-center gap-3 mt-4">
         <span id="contadorSeleccion" class="text-sm text-white/50">0 seleccionados</span>
-        <input type="text" name="nombre_reserva" id="nombreReserva" placeholder="Nombre de quien reserva (ej: Juan Pérez)"
+        <input type="text" name="nombre_reserva" id="nombreReserva" placeholder="Nombre (de quien reserva o de quien pagó)"
                class="bg-black border border-dorado/25 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-dorado">
         <button type="submit" name="estado" value="reservado"
                 class="bg-dorado text-tinta font-semibold text-sm px-4 py-2.5 rounded-xl hover:opacity-90 transition">
           🔒 Reservar seleccionados
+        </button>
+        <button type="submit" name="estado" value="vendido"
+                class="bg-green-500 text-white font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-green-600 transition">
+          ✅ Marcar vendidos
         </button>
         <button type="submit" name="estado" value="disponible"
                 class="bg-white/10 text-white font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-white/20 transition">
           🔓 Liberar seleccionados
         </button>
       </div>
-      <p class="text-xs text-white/40 mt-2">Marca los números que un vendedor ya apartó, escribe el nombre de esa persona, y dale "Reservar" — quedan excluidos del azar y aparecen en <a href="/admin/ordenes" class="text-dorado underline">Órdenes pendientes</a> para que los apruebes cuando te paguen (ahí se ponen en verde automáticamente).</p>
+      <p class="text-xs text-white/40 mt-2">
+        <b>Reservar:</b> marca los números que un vendedor ya apartó, escribe el nombre del vendedor y dale "Reservar" — quedan excluidos del azar y aparecen en <a href="/admin/ordenes" class="text-dorado underline">Órdenes pendientes</a>.<br>
+        <b>Marcar vendidos:</b> cuando un vendedor te avise que ya le pagaron un número, búscalo, selecciónalo (solo números reservados), escribe el nombre de quien pagó y dale "Marcar vendidos" — queda en verde con ese nombre.
+      </p>
     </form>
 
   </div>
@@ -133,10 +152,31 @@
       return;
     }
 
+    if (accion === 'vendido') {
+      const noReservados = Array.from(seleccionados).filter(cb => cb.dataset.estado !== 'reservado');
+      if (noReservados.length > 0) {
+        e.preventDefault();
+        alert('Solo puedes marcar como vendidos números que estén RESERVADOS. Revisa: ' +
+              noReservados.map(cb => cb.value).join(', '));
+        return;
+      }
+      if (!inputNombre.value.trim()) {
+        e.preventDefault();
+        alert('Escribe el nombre de la persona que pagó estos números.');
+        inputNombre.focus();
+        return;
+      }
+    }
+
     const numerosTexto = Array.from(seleccionados).map(cb => cb.value).join(', ');
-    const verbo = accion === 'reservado'
-      ? `RESERVAR para "${inputNombre.value.trim()}"`
-      : 'LIBERAR (volver a disponible)';
+    let verbo;
+    if (accion === 'reservado') {
+      verbo = `RESERVAR para "${inputNombre.value.trim()}"`;
+    } else if (accion === 'vendido') {
+      verbo = `marcar como VENDIDOS a nombre de "${inputNombre.value.trim()}"`;
+    } else {
+      verbo = 'LIBERAR (volver a disponible)';
+    }
     const confirmar = confirm(`¿Seguro que quieres ${verbo} estos ${seleccionados.length} números?\n\n${numerosTexto}`);
 
     if (!confirmar) {

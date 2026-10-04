@@ -104,9 +104,10 @@ const Numero = {
     );
   },
 
+  // CAMBIO: ahora también trae la columna comprador
   async obtenerTodosPorRifa(rifa_id) {
     const [rows] = await db.query(
-      `SELECT numero, estado, reservado_para FROM numeros WHERE rifa_id = ? ORDER BY numero`,
+      `SELECT numero, estado, reservado_para, comprador FROM numeros WHERE rifa_id = ? ORDER BY numero`,
       [rifa_id]
     );
     return rows;
@@ -124,6 +125,17 @@ const Numero = {
       `UPDATE numeros SET estado = 'disponible', orden_id = NULL, reservado_para = NULL WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
       [rifa_id, numeros]
     );
+  },
+
+  // NUEVO: marca como vendidos números que están reservados y guarda quién pagó
+  async venderManual(rifa_id, numeros, comprador) {
+    const [r] = await db.query(
+      `UPDATE numeros
+          SET estado = 'vendido', comprador = ?, vendido_en = NOW()
+        WHERE rifa_id = ? AND numero IN (?) AND estado = 'reservado'`,
+      [comprador, rifa_id, numeros]
+    );
+    return r.affectedRows;
   }
 };
 

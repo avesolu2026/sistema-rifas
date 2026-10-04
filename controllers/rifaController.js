@@ -223,6 +223,7 @@ const rifaController = {
     });
   },
 
+  // CAMBIO: se agregó la rama estado === 'vendido'
   async marcarNumeros(req, res) {
     try {
       const rifaId = req.params.id;
@@ -250,6 +251,13 @@ const rifaController = {
         });
 
         await Numero.asignarManual(rifaId, lista, ordenId, nombre_reserva);
+
+      } else if (estado === 'vendido') {
+        if (!nombre_reserva || !nombre_reserva.trim()) {
+          return res.status(400).send('Escribe el nombre de quien pagó');
+        }
+        await Numero.venderManual(rifaId, lista, nombre_reserva.trim());
+
       } else {
         await Numero.liberarManual(rifaId, lista);
       }
