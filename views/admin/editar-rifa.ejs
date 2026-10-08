@@ -1,10 +1,28 @@
 <div class="max-w-lg mx-auto mt-10 p-6 bg-black rounded-2xl border border-dorado/20">
   <h1 class="font-display text-2xl font-bold text-white mb-6">✏️ Editar rifa</h1>
 
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="bg-red-950 border border-red-800 text-red-300 text-sm rounded-xl p-3 mb-4">
+      <%= error %>
+    </div>
+  <% } %>
+
   <form action="/admin/rifas/<%= rifa.id %>/editar" method="POST" enctype="multipart/form-data" class="space-y-4">
     <div>
       <label class="block text-sm font-medium text-white/70">Título</label>
       <input type="text" name="titulo" required value="<%= rifa.titulo %>"
+             class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-white/70">Subtítulo (línea 2, en dorado)</label>
+      <input type="text" name="subtitulo" value="<%= rifa.subtitulo || '' %>" placeholder="Ej: NMAX 2027"
+             class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-white/70">Detalle corto (ej: 0 KM)</label>
+      <input type="text" name="detalle_corto" value="<%= rifa.detalle_corto || '' %>" placeholder="Ej: 0 KM"
              class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
     </div>
 
@@ -33,9 +51,22 @@
     </div>
 
     <div>
+      <label class="block text-sm font-medium text-white/70">Compra mínima (cantidad de números)</label>
+      <input type="number" name="compra_minima" min="1" required value="<%= rifa.compra_minima || 5 %>"
+             class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
+      <p class="text-xs text-white/40 mt-1">Mínimo de números por compra. Ej: 5 para la moto, 1 para el carro.</p>
+    </div>
+
+    <div>
       <label class="block text-sm font-medium text-white/70">Lotería con la que juega</label>
       <input type="text" name="loteria" value="<%= rifa.loteria || '' %>" placeholder="Ej: Lotería de Boyacá"
              class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent">
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-white/70">Nota importante (aparece en la página)</label>
+      <textarea name="nota_importante" rows="2" placeholder="Ej: Documentación y traspaso por cuenta del ganador."
+                class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent"><%= rifa.nota_importante || '' %></textarea>
     </div>
 
     <div>
