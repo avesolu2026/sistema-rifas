@@ -1,3 +1,7 @@
+<%
+  let fotos = [];
+  try { fotos = JSON.parse(rifa.premio_imagenes || '[]'); } catch (e) { fotos = []; }
+%>
 <div class="max-w-lg mx-auto mt-10 p-6 bg-black rounded-2xl border border-dorado/20">
   <h1 class="font-display text-2xl font-bold text-white mb-6">✏️ Editar rifa</h1>
 
@@ -6,6 +10,32 @@
       <%= error %>
     </div>
   <% } %>
+
+  <!-- Fotos actuales (cada ✕ es su propio formulario, por eso van fuera del formulario principal) -->
+  <div class="mb-6">
+    <p class="block text-sm font-medium text-white/70 mb-2">Fotos del premio (<%= fotos.length %>)</p>
+
+    <% if (fotos.length === 0) { %>
+      <p class="text-xs text-white/40">Esta rifa todavía no tiene fotos.</p>
+    <% } else { %>
+      <div class="grid grid-cols-3 gap-2">
+        <% fotos.forEach(foto => { %>
+          <div class="relative">
+            <img src="<%= foto %>" alt="Foto del premio"
+                 class="w-full h-24 object-cover rounded-xl border border-dorado/25">
+            <form action="/admin/rifas/<%= rifa.id %>/imagenes/eliminar" method="POST"
+                  onsubmit="return confirm('¿Eliminar esta foto? Esta acción no se puede deshacer.');">
+              <input type="hidden" name="imagen" value="<%= foto %>">
+              <button type="submit" title="Eliminar foto"
+                      class="absolute top-1 right-1 w-6 h-6 rounded-full bg-black/80 text-red-400 hover:bg-red-600 hover:text-white text-sm font-bold flex items-center justify-center transition">
+                ✕
+              </button>
+            </form>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
 
   <form action="/admin/rifas/<%= rifa.id %>/editar" method="POST" enctype="multipart/form-data" class="space-y-4">
     <div>
@@ -32,10 +62,14 @@
                 class="mt-1 w-full bg-black border border-dorado/25 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-dorado focus:border-transparent"><%= rifa.descripcion %></textarea>
     </div>
 
+    <!-- Botón para agregar fotos -->
     <div>
-      <label class="block text-sm font-medium text-white/70">Agregar más fotos del premio</label>
-      <input type="file" name="imagenes" multiple accept="image/*" class="mt-1 w-full text-sm text-white/70">
-      <p class="text-xs text-white/40 mt-1">Las fotos que subas se añaden a las que ya tiene la rifa.</p>
+      <label for="imagenes" class="inline-flex items-center gap-2 cursor-pointer bg-dorado/10 border border-dorado/40 text-dorado font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-dorado/20 transition">
+        📷 Agregar fotos
+      </label>
+      <input type="file" id="imagenes" name="imagenes" multiple accept="image/*" class="hidden" onchange="mostrarNombresArchivos(this)">
+      <span id="nombre-archivos" class="block text-xs text-dorado mt-2 font-medium"></span>
+      <p class="text-xs text-white/40 mt-1">Las fotos nuevas se añaden a las que ya tiene la rifa cuando des "Guardar cambios".</p>
     </div>
 
     <div>
@@ -81,3 +115,16 @@
     </button>
   </form>
 </div>
+
+<script>
+  function mostrarNombresArchivos(input) {
+    const span = document.getElementById('nombre-archivos');
+    if (input.files.length > 0) {
+      span.textContent = input.files.length === 1
+        ? input.files[0].name
+        : input.files.length + ' fotos seleccionadas';
+    } else {
+      span.textContent = '';
+    }
+  }
+</script>

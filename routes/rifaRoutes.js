@@ -21,6 +21,7 @@ router.get('/admin/rifas/:id/exportar', verificarAdmin, rifaController.exportarE
 router.post('/admin/rifas/crear', verificarAdmin, upload.array('imagenes', 10), rifaController.crearRifa);
 router.get('/admin/rifas/:id/editar', verificarAdmin, rifaController.mostrarFormularioEditar);
 router.post('/admin/rifas/:id/editar', verificarAdmin, upload.array('imagenes', 10), rifaController.actualizarRifa);
+router.post('/admin/rifas/:id/imagenes/eliminar', verificarAdmin, rifaController.eliminarImagen);
 router.post('/admin/rifas/:id/eliminar', verificarAdmin, rifaController.eliminarRifa);
 
 module.exports = router;

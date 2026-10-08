@@ -39,6 +39,19 @@ const Rifa = {
     );
   },
 
+  async eliminarImagen(id, imagen) {
+    const rifa = await this.obtenerPorId(id);
+    const actuales = JSON.parse(rifa.premio_imagenes || '[]');
+    const restantes = actuales.filter(i => i !== imagen);
+
+    await db.query(
+      `UPDATE rifas SET premio_imagenes = ? WHERE id = ?`,
+      [JSON.stringify(restantes), id]
+    );
+
+    return restantes.length !== actuales.length;
+  },
+
   async eliminar(id) {
     await db.query('DELETE FROM numeros WHERE rifa_id = ?', [id]);
     await db.query('DELETE FROM ordenes WHERE rifa_id = ?', [id]);

@@ -4,6 +4,8 @@ const db = require('../config/db');
 const Orden = require('../models/Orden');
 const Comprador = require('../models/Comprador');
 const ExcelJS = require('exceljs');
+const fs = require('fs');
+const path = require('path');
 
 const rifaController = {
   mostrarFormularioCrear(req, res) {
@@ -144,6 +146,26 @@ const rifaController = {
     } catch (error) {
       console.error(error);
       res.status(500).send('Error al eliminar la rifa: ' + error.message);
+    }
+  },
+
+  async eliminarImagen(req, res) {
+    try {
+      const rifaId = req.params.id;
+      const { imagen } = req.body;
+
+      const eliminada = await Rifa.eliminarImagen(rifaId, imagen);
+
+      // Borra también el archivo del servidor (si no lo encuentra, no pasa nada)
+      if (eliminada && imagen && imagen.startsWith('/uploads/')) {
+        const ruta = path.join(__dirname, '..', 'public', imagen);
+        fs.unlink(ruta, () => {});
+      }
+
+      res.redirect('/admin/rifas/' + rifaId + '/editar');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al eliminar la foto: ' + error.message);
     }
   },
 
