@@ -48,6 +48,21 @@ const Vendedor = {
 
   async cambiarActivo(id, activo) {
     await db.query('UPDATE vendedores SET activo = ? WHERE id = ?', [activo ? 1 : 0, id]);
+  },
+
+  // Cuántos números (vendidos o por pagar) tiene atribuidos este vendedor
+  async contarNumeros(id) {
+    const [[fila]] = await db.query(
+      'SELECT COUNT(*) AS total FROM numeros WHERE vendedor_id = ?',
+      [id]
+    );
+    return fila.total;
+  },
+
+  // Elimina al vendedor (solo se llama si no tiene números atribuidos)
+  async eliminar(id) {
+    await db.query('UPDATE ordenes SET vendedor_id = NULL WHERE vendedor_id = ?', [id]);
+    await db.query('DELETE FROM vendedores WHERE id = ?', [id]);
   }
 };
 

@@ -88,6 +88,13 @@
                   <%= v.activo ? 'Desactivar' : 'Activar' %>
                 </button>
               </form>
+              <form action="/admin/rifas/<%= rifa.id %>/vendedores/<%= v.id %>/eliminar" method="POST"
+                    onsubmit="return confirm('¿Eliminar este vendedor? Su link dejará de funcionar y esta acción no se puede deshacer.');">
+                <button type="submit"
+                        class="text-xs font-medium px-3 py-2 rounded-lg border border-red-900 text-red-400 hover:bg-red-950 transition">
+                  🗑️ Eliminar
+                </button>
+              </form>
             </div>
           </div>
         <% }) %>
@@ -95,6 +102,7 @@
 
       <p class="text-xs text-white/40 mt-4">
         "Vendidos" cuenta solo los números con pago confirmado. "Por pagar" son los números que el cliente apartó por el link y todavía no ha pagado.
+        Un vendedor con números vendidos o por pagar no se puede eliminar: desactívalo para que su link no registre ventas nuevas.
       </p>
     <% } %>
 

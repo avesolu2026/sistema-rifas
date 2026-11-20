@@ -60,6 +60,32 @@ const vendedorController = {
       console.error(error);
       res.status(500).send('Error al cambiar el vendedor: ' + error.message);
     }
+  },
+
+  async eliminar(req, res) {
+    try {
+      const rifaId = req.params.id;
+      const vendedor = await Vendedor.obtenerPorId(req.params.vid);
+
+      // Solo se puede eliminar un vendedor que pertenezca a esta rifa
+      if (!vendedor || String(vendedor.rifa_id) !== String(rifaId)) {
+        return res.status(404).send('Vendedor no encontrado');
+      }
+
+      // Si ya tiene números vendidos o por pagar, no se elimina para no perder quién vendió
+      const conNumeros = await Vendedor.contarNumeros(vendedor.id);
+      if (conNumeros > 0) {
+        const mensaje = 'No se puede eliminar a ' + vendedor.nombre +
+          ' porque tiene números vendidos o por pagar. Desactívalo para que su link deje de registrar ventas nuevas.';
+        return res.redirect('/admin/rifas/' + rifaId + '/vendedores?error=' + encodeURIComponent(mensaje));
+      }
+
+      await Vendedor.eliminar(vendedor.id);
+      res.redirect('/admin/rifas/' + rifaId + '/vendedores');
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error al eliminar el vendedor: ' + error.message);
+    }
   }
 };
 
