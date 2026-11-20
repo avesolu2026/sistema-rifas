@@ -1,0 +1,130 @@
+<div class="min-h-screen bg-black">
+
+  <%- include('../partials/admin-header', { tabActiva: 'rifas' }) %>
+
+  <div class="max-w-5xl mx-auto px-4 py-8">
+
+    <div class="mb-6">
+      <a href="/admin/rifas" class="text-sm text-white/40 hover:text-white/60">← Volver a mis rifas</a>
+      <h1 class="font-display text-2xl font-bold text-white mt-2">Vendedores</h1>
+      <p class="text-sm text-white/50 mt-0.5"><%= rifa.titulo %> — $<%= Number(rifa.precio_numero).toLocaleString('es-CO') %> por número</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="bg-red-950 border border-red-800 text-red-300 text-sm rounded-xl p-3 mb-4"><%= error %></div>
+    <% } %>
+
+    <!-- Crear vendedor -->
+    <form action="/admin/rifas/<%= rifa.id %>/vendedores/crear" method="POST"
+          class="bg-black rounded-2xl border border-dorado/20 p-4 mb-8 flex flex-wrap items-end gap-3">
+      <div class="flex-1 min-w-[160px]">
+        <label class="block text-xs font-medium text-white/60 mb-1">Nombre del vendedor</label>
+        <input type="text" name="nombre" required placeholder="Ej: Carlos"
+               class="w-full bg-black border border-dorado/25 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-dorado">
+      </div>
+      <div class="flex-1 min-w-[140px]">
+        <label class="block text-xs font-medium text-white/60 mb-1">Teléfono (opcional)</label>
+        <input type="text" name="telefono" placeholder="300 123 4567"
+               class="w-full bg-black border border-dorado/25 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-dorado">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-white/60 mb-1">Color</label>
+        <input type="color" name="color" value="#8b5cf6"
+               class="h-10 w-14 bg-black border border-dorado/25 rounded-xl cursor-pointer">
+      </div>
+      <button type="submit"
+              class="bg-dorado text-tinta font-display font-semibold text-sm px-5 py-2.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition">
+        + Crear vendedor
+      </button>
+    </form>
+
+    <% if (vendedores.length === 0) { %>
+      <div class="bg-black rounded-2xl border border-dashed border-dorado/20 p-10 text-center">
+        <p class="text-white/40">Todavía no hay vendedores en esta rifa.</p>
+      </div>
+    <% } else { %>
+      <div class="grid gap-3">
+        <% vendedores.forEach(v => { %>
+          <div class="bg-black rounded-2xl border border-dorado/20 p-4 <%= v.activo ? '' : 'opacity-50' %>">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <span class="w-5 h-5 rounded-full inline-block" style="background: <%= v.color %>"></span>
+                <div>
+                  <p class="font-display font-semibold text-white">
+                    <%= v.nombre %>
+                    <% if (!v.activo) { %><span class="text-xs text-white/40 font-normal">(desactivado)</span><% } %>
+                  </p>
+                  <% if (v.telefono) { %><p class="text-xs text-white/40"><%= v.telefono %></p><% } %>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-5 text-right">
+                <div>
+                  <p class="text-xs text-white/40">Vendidos</p>
+                  <p class="font-display text-lg font-bold text-white"><%= v.vendidos %></p>
+                </div>
+                <div>
+                  <p class="text-xs text-white/40">Por pagar</p>
+                  <p class="font-display text-lg font-bold text-dorado"><%= v.pendientes %></p>
+                </div>
+                <div>
+                  <p class="text-xs text-white/40">Total</p>
+                  <p class="font-display text-lg font-bold text-dorado">$<%= Number(v.total).toLocaleString('es-CO') %></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-dorado/10">
+              <input type="text" readonly value="<%= v.link %>"
+                     class="flex-1 min-w-[200px] bg-white/5 border border-dorado/15 rounded-lg px-3 py-2 text-xs text-white/70">
+              <button type="button" data-link="<%= v.link %>" onclick="copiarLinkVendedor(this)"
+                      class="text-xs font-medium px-3 py-2 rounded-lg border border-dorado/20 text-white/80 hover:bg-white/5 transition">
+                🔗 Copiar link
+              </button>
+              <form action="/admin/rifas/<%= rifa.id %>/vendedores/<%= v.id %>/estado" method="POST"
+                    onsubmit="return confirm('<%= v.activo ? '¿Desactivar este vendedor? Su link dejará de registrar nuevas ventas.' : '¿Activar este vendedor otra vez?' %>');">
+                <button type="submit"
+                        class="text-xs font-medium px-3 py-2 rounded-lg border <%= v.activo ? 'border-red-900 text-red-400 hover:bg-red-950' : 'border-green-900 text-green-400 hover:bg-green-950' %> transition">
+                  <%= v.activo ? 'Desactivar' : 'Activar' %>
+                </button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <p class="text-xs text-white/40 mt-4">
+        "Vendidos" cuenta solo los números con pago confirmado. "Por pagar" son los números que el cliente apartó por el link y todavía no ha pagado.
+      </p>
+    <% } %>
+
+  </div>
+</div>
+
+<script>
+  function copiarLinkVendedor(btn) {
+    const url = btn.dataset.link;
+    const textoOriginal = btn.textContent;
+
+    function listo() {
+      btn.textContent = '✅ ¡Link copiado!';
+      setTimeout(function () { btn.textContent = textoOriginal; }, 1500);
+    }
+
+    function respaldo() {
+      const t = document.createElement('textarea');
+      t.value = url;
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand('copy');
+      t.remove();
+      listo();
+    }
+
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(listo).catch(respaldo);
+    } else {
+      respaldo();
+    }
+  }
+</script>

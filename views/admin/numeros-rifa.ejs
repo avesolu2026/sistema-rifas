@@ -28,6 +28,7 @@
       <span class="flex items-center gap-1.5 text-white/60"><span class="w-3 h-3 rounded bg-white/10 inline-block"></span> Disponible</span>
       <span class="flex items-center gap-1.5 text-white/60"><span class="w-3 h-3 rounded bg-dorado inline-block"></span> Reservado</span>
       <span class="flex items-center gap-1.5 text-white/60"><span class="w-3 h-3 rounded bg-green-500 inline-block"></span> Vendido</span>
+      <span class="flex items-center gap-1.5 text-white/60"><span class="w-3 h-3 rounded inline-block" style="background:linear-gradient(90deg,#8b5cf6,#ef4444,#3b82f6)"></span> Vendido por un vendedor (color del vendedor)</span>
     </div>
 
     <form method="POST" action="/admin/rifas/<%= rifa.id %>/numeros/marcar" id="formNumeros">
@@ -35,12 +36,16 @@
         <div id="grillaNumeros" class="grid grid-cols-[repeat(auto-fill,minmax(56px,1fr))] gap-1.5">
           <% numeros.forEach(n => { %>
             <%
+              const colorVendedor = (n.estado === 'vendido' && n.vendedor_color) ? n.vendedor_color : null;
               let tooltip = '';
               if (n.estado === 'vendido') {
                 tooltip = 'Pagó: ' + (n.comprador || 'sin nombre');
                 if (n.reservado_para) tooltip += ' (vendedor: ' + n.reservado_para + ')';
+                if (n.vendedor_nombre) tooltip = 'Vendió: ' + n.vendedor_nombre;
               } else if (n.reservado_para) {
                 tooltip = 'Reservado para: ' + n.reservado_para;
+              } else if (n.vendedor_nombre) {
+                tooltip = 'Apartado por el link de: ' + n.vendedor_nombre;
               }
             %>
             <label class="fila-numero relative cursor-pointer" data-numero="<%= n.numero %>" data-estado="<%= n.estado %>"
@@ -49,15 +54,19 @@
                 <input type="checkbox" name="numeros" value="<%= n.numero %>" data-estado="<%= n.estado %>" class="peer sr-only checkbox-numero">
               <% } %>
               <span class="block text-center text-[11px] font-semibold py-1.5 rounded transition
-                <%= n.estado === 'vendido' ? 'bg-green-500/15 text-green-400 cursor-not-allowed' :
+                <%= colorVendedor ? 'cursor-not-allowed' :
+                    n.estado === 'vendido' ? 'bg-green-500/15 text-green-400 cursor-not-allowed' :
                     n.estado === 'reservado' ? 'bg-dorado/20 text-dorado peer-checked:ring-2 peer-checked:ring-dorado' :
-                    'bg-white/10 text-white/50 peer-checked:ring-2 peer-checked:ring-dorado peer-checked:bg-dorado/20 peer-checked:text-dorado' %>">
+                    'bg-white/10 text-white/50 peer-checked:ring-2 peer-checked:ring-dorado peer-checked:bg-dorado/20 peer-checked:text-dorado' %>"
+                <% if (colorVendedor) { %>style="background: <%= colorVendedor %>33; color: <%= colorVendedor %>;"<% } %>>
                 <%= String(n.numero).padStart(4, '0') %>
               </span>
               <% if (n.estado === 'reservado' && n.reservado_para) { %>
                 <span class="block text-center text-[8px] text-dorado/70 truncate px-0.5"><%= n.reservado_para %></span>
               <% } %>
-              <% if (n.estado === 'vendido' && n.comprador) { %>
+              <% if (n.estado === 'vendido' && colorVendedor) { %>
+                <span class="block text-center text-[8px] truncate px-0.5" style="color: <%= colorVendedor %>"><%= n.vendedor_nombre %></span>
+              <% } else if (n.estado === 'vendido' && n.comprador) { %>
                 <span class="block text-center text-[8px] text-green-400/80 truncate px-0.5"><%= n.comprador %></span>
               <% } %>
             </label>

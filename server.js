@@ -8,6 +8,7 @@ const compraRoutes = require('./routes/compraRoutes');
 const adminOrdenRoutes = require('./routes/adminOrdenRoutes');
 const authRoutes = require('./routes/authRoutes');
 const configRoutes = require('./routes/configRoutes');
+const vendedorRoutes = require('./routes/vendedorRoutes');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -30,6 +31,7 @@ app.use('/', compraRoutes);
 app.use('/', adminOrdenRoutes);
 app.use('/', authRoutes);
 app.use('/', configRoutes);
+app.use('/', vendedorRoutes);
 
 // Página principal: redirige directo a la rifa activa
 app.get('/', (req, res) => {

@@ -3,6 +3,7 @@ const Rifa = require('../models/Rifa');
 const Comprador = require('../models/Comprador');
 const Orden = require('../models/Orden');
 const Numero = require('../models/Numero');
+const Vendedor = require('../models/Vendedor');
 
 // Verifica que el webhook de verdad venga de Wompi (no de un tercero malicioso)
 function verificarFirmaWebhook(payload, eventsSecret) {
@@ -49,8 +50,9 @@ const compraController = {
       if (!rifa) return res.status(404).send('Rifa no encontrada');
 
       const cantidadNum = parseInt(cantidad);
-      if (!cantidadNum || cantidadNum < 1) {
-        return res.status(400).send('Cantidad inválida');
+      const minimo = rifa.compra_minima || 5;
+      if (!cantidadNum || cantidadNum < minimo) {
+        return res.status(400).send(`La compra mínima es de ${minimo} números`);
       }
 
       const valorTotal = cantidadNum * rifa.precio_numero;
@@ -65,6 +67,17 @@ const compraController = {
       });
 
       await Numero.asignarAleatorios(rifaId, cantidadNum, ordenId);
+
+      // Si vino por el link de un vendedor, se le atribuye la orden
+      try {
+        const codigo = req.cookies ? req.cookies['vend_' + rifaId] : null;
+        const vendedor = await Vendedor.obtenerPorCodigo(rifaId, codigo);
+        if (vendedor) {
+          await Vendedor.atribuirOrden(ordenId, vendedor.id);
+        }
+      } catch (errorVendedor) {
+        console.error('No se pudo atribuir la orden al vendedor:', errorVendedor);
+      }
 
       res.redirect(`/comprar/${rifaId}/confirmar/${ordenId}`);
 

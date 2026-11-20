@@ -8,6 +8,10 @@
       <a href="/admin/rifas" class="text-sm text-tinta/40 hover:text-tinta/60">← Volver a mis rifas</a>
       <h1 class="font-display text-2xl font-bold text-tinta mt-2"><%= rifa.titulo %></h1>
       <p class="text-sm text-tinta/50 mt-0.5"><%= stats.total_numeros %> números en total</p>
+      <a href="/admin/rifas/<%= rifa.id %>/vendedores"
+         class="inline-block mt-3 text-xs font-medium px-3 py-1.5 rounded-lg border border-tinta/10 text-tinta/70 hover:bg-white transition">
+        👥 Vendedores de esta rifa
+      </a>
     </div>
 
     <!-- Tarjetas de estadísticas -->

@@ -97,17 +97,23 @@ const Numero = {
     );
   },
 
+  // CAMBIO: al liberar también se borra el vendedor del número
   async liberar(orden_id) {
     await db.query(
-      `UPDATE numeros SET estado = 'disponible', orden_id = NULL WHERE orden_id = ?`,
+      `UPDATE numeros SET estado = 'disponible', orden_id = NULL, vendedor_id = NULL WHERE orden_id = ?`,
       [orden_id]
     );
   },
 
-  // CAMBIO: ahora también trae la columna comprador
+  // CAMBIO: trae también el nombre y el color del vendedor
   async obtenerTodosPorRifa(rifa_id) {
     const [rows] = await db.query(
-      `SELECT numero, estado, reservado_para, comprador FROM numeros WHERE rifa_id = ? ORDER BY numero`,
+      `SELECT n.numero, n.estado, n.reservado_para, n.comprador,
+              v.nombre AS vendedor_nombre, v.color AS vendedor_color
+       FROM numeros n
+       LEFT JOIN vendedores v ON v.id = n.vendedor_id
+       WHERE n.rifa_id = ?
+       ORDER BY n.numero`,
       [rifa_id]
     );
     return rows;
@@ -120,15 +126,16 @@ const Numero = {
     );
   },
 
+  // CAMBIO: al liberar también se borra el vendedor del número
   async liberarManual(rifa_id, numeros) {
     await db.query(
-      `UPDATE numeros SET estado = 'disponible', orden_id = NULL, reservado_para = NULL WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
+      `UPDATE numeros SET estado = 'disponible', orden_id = NULL, reservado_para = NULL, vendedor_id = NULL WHERE rifa_id = ? AND numero IN (?) AND estado != 'vendido'`,
       [rifa_id, numeros]
     );
   },
 
-  // NUEVO: marca como vendidos números que están reservados y guarda quién pagó
-    async venderManual(rifa_id, numeros, comprador) {
+  // Marca como vendidos números que están reservados y guarda quién pagó
+  async venderManual(rifa_id, numeros, comprador) {
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
@@ -184,5 +191,6 @@ const Numero = {
       throw error;
     }
   }
-}
+};
+
 module.exports = Numero;

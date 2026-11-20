@@ -1,6 +1,7 @@
 const Rifa = require('../models/Rifa');
 const Numero = require('../models/Numero');
 const Configuracion = require('../models/Configuracion');
+const Vendedor = require('../models/Vendedor');
 
 const publicController = {
   async mostrarRifa(req, res) {
@@ -9,6 +10,22 @@ const publicController = {
 
     if (!rifa) {
       return res.status(404).send('Rifa no encontrada');
+    }
+
+    // Si entró por el link de un vendedor, recordamos quién fue (30 días)
+    if (req.query.v) {
+      try {
+        const vendedor = await Vendedor.obtenerPorCodigo(rifaId, req.query.v);
+        if (vendedor) {
+          res.cookie('vend_' + rifaId, vendedor.codigo, {
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: 'lax'
+          });
+        }
+      } catch (error) {
+        console.error('Error al leer el vendedor del link:', error);
+      }
     }
 
     const disponibles = await Numero.contarDisponibles(rifaId);
