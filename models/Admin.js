@@ -21,9 +21,16 @@ const Admin = {
     return result.insertId;
   },
 
+  // Cambia la contraseña y sube la versión: así se cierran las sesiones anteriores.
+  // Devuelve la versión nueva.
   async cambiarPassword(id, nuevaPassword) {
     const passwordHash = await bcrypt.hash(nuevaPassword, 10);
-    await db.query('UPDATE admins SET password_hash = ? WHERE id = ?', [passwordHash, id]);
+    await db.query(
+      'UPDATE admins SET password_hash = ?, token_version = token_version + 1 WHERE id = ?',
+      [passwordHash, id]
+    );
+    const [rows] = await db.query('SELECT token_version FROM admins WHERE id = ?', [id]);
+    return rows[0].token_version;
   }
 };
 

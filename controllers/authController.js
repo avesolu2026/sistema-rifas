@@ -2,14 +2,18 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 
-// Obtiene el id del admin que tiene la sesión abierta
-function idAdminActual(req) {
-  if (req.admin && req.admin.id) return req.admin.id;
-  try {
-    return jwt.verify(req.cookies.token, process.env.JWT_SECRET).id;
-  } catch (e) {
-    return null;
-  }
+// Crea la sesión (cookie) del admin con la versión actual de su contraseña
+function iniciarSesion(res, admin, version) {
+  const token = jwt.sign(
+    { id: admin.id, usuario: admin.usuario, tv: version },
+    process.env.JWT_SECRET,
+    { expiresIn: '8h' }
+  );
+
+  res.cookie('token', token, {
+    httpOnly: true,
+    maxAge: 8 * 60 * 60 * 1000
+  });
 }
 
 const authController = {
@@ -31,16 +35,7 @@ const authController = {
         return res.render('admin/login', { title: 'Iniciar sesión', error: 'Usuario o contraseña incorrectos' });
       }
 
-      const token = jwt.sign(
-        { id: admin.id, usuario: admin.usuario },
-        process.env.JWT_SECRET,
-        { expiresIn: '8h' }
-      );
-
-      res.cookie('token', token, {
-        httpOnly: true,
-        maxAge: 8 * 60 * 60 * 1000
-      });
+      iniciarSesion(res, admin, admin.token_version || 0);
 
       res.redirect('/admin/rifas');
     } catch (error) {
@@ -95,7 +90,7 @@ const authController = {
     try {
       const { passwordActual, passwordNueva, confirmarPassword } = req.body;
 
-      const adminId = idAdminActual(req);
+      const adminId = req.admin && req.admin.id;
       if (!adminId) return res.redirect('/admin/login');
 
       const admin = await Admin.obtenerPorId(adminId);
@@ -122,9 +117,13 @@ const authController = {
         return vista('La nueva contraseña debe ser diferente a la actual', null);
       }
 
-      await Admin.cambiarPassword(adminId, passwordNueva);
+      // Cambia la contraseña y cierra todas las demás sesiones abiertas
+      const nuevaVersion = await Admin.cambiarPassword(adminId, passwordNueva);
 
-      return vista(null, 'Contraseña actualizada correctamente');
+      // Quien la cambió sigue adentro con una sesión nueva
+      iniciarSesion(res, admin, nuevaVersion);
+
+      return vista(null, 'Contraseña actualizada. Las demás sesiones abiertas se cerraron.');
     } catch (error) {
       console.error(error);
       res.status(500).send('Error al cambiar la contraseña: ' + error.message);
